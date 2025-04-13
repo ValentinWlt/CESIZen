@@ -1,0 +1,237 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = CESIZen
+build_property.RootNamespace = CESIZen
+build_property.ProjectDir = C:\Users\Valentin Waultier\Desktop\Cours\Bachelor\Projet Individuel CESIZen\CESIZenn\CESIZen\CESIZen\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\Valentin Waultier\Desktop\Cours\Bachelor\Projet Individuel CESIZen\CESIZenn\CESIZen\CESIZen
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 8.0
+build_property.EnableCodeStyleSeverity = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Account/AccessDenied.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxBY2Nlc3NEZW5pZWQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Account/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Account/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Admin/Information/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5mb3JtYXRpb25cQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Admin/Information/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5mb3JtYXRpb25cRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Admin/Information/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5mb3JtYXRpb25cRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Admin/Information/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5mb3JtYXRpb25cRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Admin/Information/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5mb3JtYXRpb25cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Admin/Users/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cVXNlcnNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Admin/Users/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cVXNlcnNcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Admin/Users/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cVXNlcnNcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Admin/Users/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cVXNlcnNcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Admin/Users/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cVXNlcnNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Droits/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRHJvaXRzXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Droits/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRHJvaXRzXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Droits/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRHJvaXRzXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Droits/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRHJvaXRzXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Droits/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRHJvaXRzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Information/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5mb3JtYXRpb25cQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Information/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5mb3JtYXRpb25cRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Information/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5mb3JtYXRpb25cRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Information/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5mb3JtYXRpb25cRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Information/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5mb3JtYXRpb25cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Information/IndexAdmin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5mb3JtYXRpb25cSW5kZXhBZG1pbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Information/Information.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5mb3JtYXRpb25cSW5mb3JtYXRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Questionnaires/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUXVlc3Rpb25uYWlyZXNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Questionnaires/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUXVlc3Rpb25uYWlyZXNcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Questionnaires/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUXVlc3Rpb25uYWlyZXNcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Questionnaires/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUXVlc3Rpb25uYWlyZXNcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Questionnaires/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUXVlc3Rpb25uYWlyZXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Questions/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUXVlc3Rpb25zXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Questions/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUXVlc3Rpb25zXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Questions/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUXVlc3Rpb25zXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Questions/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUXVlc3Rpb25zXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Questions/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUXVlc3Rpb25zXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Roles/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9sZXNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Roles/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9sZXNcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Roles/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9sZXNcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Roles/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9sZXNcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Roles/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9sZXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Utilisateurs/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXRpbGlzYXRldXJzXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Utilisateurs/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXRpbGlzYXRldXJzXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Utilisateurs/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXRpbGlzYXRldXJzXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Utilisateurs/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXRpbGlzYXRldXJzXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Utilisateurs/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXRpbGlzYXRldXJzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valentin Waultier/Desktop/Cours/Bachelor/Projet Individuel CESIZen/CESIZenn/CESIZen/CESIZen/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-wd8cee1qw8

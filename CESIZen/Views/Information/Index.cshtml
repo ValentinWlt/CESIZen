@@ -1,0 +1,63 @@
+﻿@model IEnumerable<CESIZen.Models.Information>
+@{
+    ViewData["Title"] = "Informations sur la santé mentale";
+}
+
+<div class="container mt-4">
+    <h1>Informations sur la santé mentale</h1>
+    <p class="lead">Découvrez nos conseils et informations pour améliorer votre bien-être mental et gérer votre stress.</p>
+
+    @if (ViewBag.Categories != null && ViewBag.Categories.Count > 0)
+    {
+        <div class="mb-4">
+            <h5>Filtrer par catégorie :</h5>
+            <div class="btn-group">
+                <a asp-action="Index" class="btn @(string.IsNullOrEmpty(ViewBag.CategorieSelectionnee) ? "btn-primary" : "btn-outline-primary")">Toutes</a>
+                @foreach (var categorie in ViewBag.Categories)
+                {
+                    <a asp-action="Index" asp-route-categorie="@categorie" class="btn @(ViewBag.CategorieSelectionnee == categorie ? "btn-primary" : "btn-outline-primary")">@categorie</a>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="row">
+        @if (!Model.Any())
+        {
+            <div class="col-12">
+                <div class="alert alert-info">
+                    Aucune information disponible pour le moment.
+                </div>
+            </div>
+        }
+        else
+        {
+            @foreach (var item in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Titre</h5>
+                            <p class="card-text small text-muted">@item.DateCreation.ToString("dd MMMM yyyy")</p>
+                            <p class="card-text">@item.Resume</p>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Lire plus</a>
+                            @if (!string.IsNullOrEmpty(item.Categorie))
+                            {
+                                <span class="badge bg-secondary float-end mt-2">@item.Categorie</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    @if (User.IsInRole("Administrateur"))
+    {
+        <div class="mt-4">
+            <a asp-action="Administration" class="btn btn-outline-secondary">Administration des informations</a>
+        </div>
+    }
+</div>

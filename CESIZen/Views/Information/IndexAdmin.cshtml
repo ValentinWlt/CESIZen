@@ -1,0 +1,101 @@
+﻿@model IEnumerable<CESIZen.Models.Information>
+@{
+    ViewData["Title"] = "Administration des informations";
+}
+
+<div class="container mt-4">
+    <h1>Administration des informations</h1>
+    <p class="lead">Gérez les informations publiées sur la plateforme CESIZen.</p>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+    }
+
+    <div class="mb-3">
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nouvelle information
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-eye"></i> Voir la page publique
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Catégorie</th>
+                        <th>Date de création</th>
+                        <th>Ordre</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center">Aucune information disponible.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@item.Id">@item.Titre</a>
+                                </td>
+                                <td>
+                                    @(string.IsNullOrEmpty(item.Categorie) ? "-" : item.Categorie)
+                                </td>
+                                <td>@item.DateCreation.ToString("dd/MM/yyyy")</td>
+                                <td>@item.OrdreAffichage</td>
+                                <td>
+                                    @if (item.EstPublie)
+                                    {
+                                        <span class="badge bg-success">Publié</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Non publié</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-pencil"></i> Modifier
+                                        </a>
+                                        @if (item.EstPublie)
+                                        {
+                                            <a asp-action="ModifierVisibilite" asp-route-id="@item.Id" asp-route-estPublie="false"
+                                               class="btn btn-sm btn-outline-warning">
+                                                <i class="bi bi-eye-slash"></i> Dépublier
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a asp-action="ModifierVisibilite" asp-route-id="@item.Id" asp-route-estPublie="true"
+                                               class="btn btn-sm btn-outline-success">
+                                                <i class="bi bi-eye"></i> Publier
+                                            </a>
+                                        }
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i> Supprimer
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

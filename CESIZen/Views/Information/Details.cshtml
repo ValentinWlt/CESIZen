@@ -1,0 +1,54 @@
+﻿@model CESIZen.Models.Information
+@{
+    ViewData["Title"] = Model.Titre;
+}
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Informations</a></li>
+            @if (!string.IsNullOrEmpty(Model.Categorie))
+            {
+                <li class="breadcrumb-item"><a asp-action="Index" asp-route-categorie="@Model.Categorie">@Model.Categorie</a></li>
+            }
+            <li class="breadcrumb-item active" aria-current="page">@Model.Titre</li>
+        </ol>
+    </nav>
+
+    <article class="bg-white p-4 rounded shadow-sm">
+        <h1 class="mb-3">@Model.Titre</h1>
+
+        <div class="d-flex justify-content-between mb-4">
+            <span class="text-muted">
+                <i class="bi bi-calendar"></i>
+                Publié le @Model.DateCreation.ToString("dd MMMM yyyy")
+            </span>
+            @if (!string.IsNullOrEmpty(Model.Categorie))
+            {
+                <span class="badge bg-secondary">@Model.Categorie</span>
+            }
+        </div>
+
+        <div class="content">
+            @Html.Raw(Model.Contenu)
+        </div>
+    </article>
+
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Retour aux informations
+        </a>
+
+        @if (User.IsInRole("Administrateur"))
+        {
+            <div class="float-end">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">
+                    <i class="bi bi-pencil"></i> Modifier
+                </a>
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">
+                    <i class="bi bi-trash"></i> Supprimer
+                </a>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,66 @@
+﻿@model CESIZen.Models.Information
+
+@{
+    ViewData["Title"] = "Supprimer l'information";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h2 class="mb-4 text-danger">Êtes-vous sûr de vouloir supprimer cette information ?</h2>
+
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle"></i> Cette action est irréversible.
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>@Model.Titre</h4>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">Catégorie</dt>
+                        <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Categorie) ? "Non catégorisé" : Model.Categorie)</dd>
+
+                        <dt class="col-sm-3">Statut</dt>
+                        <dd class="col-sm-9">
+                            <span class="badge @(Model.EstPublie ? "bg-success" : "bg-warning")">
+                                @(Model.EstPublie ? "Publié" : "Non publié")
+                            </span>
+                        </dd>
+
+                        <dt class="col-sm-3">Ordre d'affichage</dt>
+                        <dd class="col-sm-9">@Model.OrdreAffichage</dd>
+
+                        <dt class="col-sm-3">Date de création</dt>
+                        <dd class="col-sm-9">@Model.DateCreation.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                        <dt class="col-sm-3">Contenu</dt>
+                        <dd class="col-sm-9">
+                            <div class="content-preview">
+                                @Html.Raw(Model.Contenu?.Length > 200
+                                         ? Model.Contenu.Substring(0, 200) + "..."
+                                         : Model.Contenu)
+                            </div>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="Id" />
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Confirmer la suppression
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+                    </div>
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info">
+                        Voir les détails complets
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,71 @@
+﻿@model CESIZen.Models.Information
+@{
+    ViewData["Title"] = "Créer une information";
+}
+
+<div class="container mt-4">
+    <h1>Créer une nouvelle information</h1>
+
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="Titre" class="form-label">Titre</label>
+            <input asp-for="Titre" class="form-control" />
+            <span asp-validation-for="Titre" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Categorie" class="form-label">Catégorie</label>
+            <input asp-for="Categorie" class="form-control" placeholder="Ex: Gestion du stress, Santé mentale, Astuces bien-être" />
+            <span asp-validation-for="Categorie" class="text-danger"></span>
+            <div class="form-text">Utilisé pour regrouper les informations similaires</div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Contenu" class="form-label">Contenu</label>
+            <textarea asp-for="Contenu" class="form-control" id="editor" rows="10"></textarea>
+            <span asp-validation-for="Contenu" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="DateCreation" class="form-label">Date de création</label>
+            <input asp-for="DateCreation" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+            <span asp-validation-for="DateCreation" class="text-danger"></span>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label asp-for="OrdreAffichage" class="form-label">Ordre d'affichage</label>
+                <input asp-for="OrdreAffichage" class="form-control" type="number" min="1" value="999" />
+                <span asp-validation-for="OrdreAffichage" class="text-danger"></span>
+                <div class="form-text">Les informations sont triées par ordre croissant (1 apparaît en premier)</div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-check mt-4">
+                    <input asp-for="EstPublie" class="form-check-input" type="checkbox" checked />
+                    <label asp-for="EstPublie" class="form-check-label">Publié</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Créer</button>
+            <a asp-action="Administration" class="btn btn-outline-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#editor'))
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+}

@@ -1,0 +1,39 @@
+﻿@model CESIZen.Models.Utilisateur
+
+@{
+    ViewData["Title"] = "Détails de l'utilisateur";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Détails de l'utilisateur</h1>
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-3">Nom</dt>
+        <dd class="col-sm-9">@Model.Nom</dd>
+
+        <dt class="col-sm-3">Prénom</dt>
+        <dd class="col-sm-9">@Model.Prenom</dd>
+
+        <dt class="col-sm-3">Email</dt>
+        <dd class="col-sm-9">@Model.Mail</dd>
+
+        <dt class="col-sm-3">Téléphone</dt>
+        <dd class="col-sm-9">@Model.Tel</dd>
+
+        <dt class="col-sm-3">Statut</dt>
+        <dd class="col-sm-9">@Model.Statut</dd>
+
+        <dt class="col-sm-3">Rôle(s)</dt>
+        <dd class="col-sm-9">
+            @if (ViewBag.UserRoles != null)
+            {
+                @string.Join(", ", ViewBag.UserRoles)
+            }
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-controller="User"  asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Modifier</a> |
+    <a asp-controller ="User"  asp-action="UsersList" class="btn btn-secondary">Retour à la liste</a>
+</div>

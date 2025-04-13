@@ -1,0 +1,56 @@
+﻿@model IEnumerable<CESIZen.Models.Utilisateur>
+@{
+    ViewData["Title"] = "Index";
+    var userRoles = ViewBag.UserRoles as Dictionary<int, IList<string>>;
+}
+
+<h1>Liste des utilisateurs</h1>
+
+<p>
+    <a asp-controller="Utilisateurs"  asp-action="Create" class="btn btn-primary">Créer un nouvel utilisateur</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Email</th>
+            <th>Téléphone</th>
+            <th>Statut</th>
+            <th>Rôles</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Nom</td>
+                <td>@item.Prenom</td>
+                <td>@item.Mail</td>
+                <td>@item.Tel</td>
+                <td>@item.Statut</td>
+                <td>
+                    @if (userRoles != null && userRoles.ContainsKey(item.Id))
+                    {
+                        @string.Join(", ", userRoles[item.Id])
+                    }
+                </td>
+                <td>
+                    <a asp-controller="Utilisateurs"  asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-info">Modifier</a>
+                    <a asp-controller="Utilisateurs"  asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-secondary">Détails</a>
+                    <a asp-controller="Utilisateurs"  asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Supprimer</a>
+                    
+                    @if (userRoles != null && userRoles.ContainsKey(item.Id) && !userRoles[item.Id].Contains("Admin"))
+                    {
+                        <a asp-action="PromoteToAdmin" asp-route-id="@item.Id" class="btn btn-sm btn-success">Promouvoir Admin</a>
+                    }
+                    else if (userRoles != null && userRoles.ContainsKey(item.Id) && userRoles[item.Id].Contains("Admin"))
+                    {
+                        <a asp-action="DemoteToUser" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Rétrograder User</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

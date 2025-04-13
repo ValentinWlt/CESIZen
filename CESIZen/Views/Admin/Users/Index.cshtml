@@ -1,0 +1,63 @@
+﻿@model IEnumerable<CESIZen.Models.Utilisateur>
+
+@{
+    ViewData["Title"] = "Gestion des Utilisateurs";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Gestion des Utilisateurs</h1>
+
+<p>
+    <a asp-controller="User" asp-route-area="" asp-action="Create" class="btn btn-primary">Créer un nouvel utilisateur</a>
+</p>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Email</th>
+            <th>Téléphone</th>
+            <th>Statut</th>
+            <th>Rôle(s)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Nom</td>
+                <td>@item.Prenom</td>
+                <td>@item.Mail</td>
+                <td>@item.Tel</td>
+                <td>@item.Statut</td>
+                <td>
+                    @if (ViewBag.UserRoles != null && ViewBag.UserRoles.ContainsKey(item.Id))
+                    {
+                        @string.Join(", ", ViewBag.UserRoles[item.Id])
+                    }
+                </td>
+                <td>
+                    <a asp-controller="User" asp-route-area="" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Modifier</a> |
+                    <a asp-controller="User" asp-route-area="" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Détails</a> |
+                    <a asp-controller="User" asp-route-area="" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Supprimer</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
