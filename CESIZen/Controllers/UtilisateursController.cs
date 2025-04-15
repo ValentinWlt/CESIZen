@@ -138,28 +138,22 @@ namespace CESIZen.Controllers
             {
                 try
                 {
-                    // Récupérer l'utilisateur complet depuis la base de données
                     var userToUpdate = await _userManager.FindByIdAsync(id.ToString());
 
-                    // Mettre à jour les propriétés modifiables
                     userToUpdate.Nom = utilisateur.Nom;
                     userToUpdate.Prenom = utilisateur.Prenom;
                     userToUpdate.Email = utilisateur.Mail;
                     userToUpdate.PhoneNumber = utilisateur.Tel;
                     userToUpdate.Statut = utilisateur.Statut;
 
-                    // Mettre à jour l'utilisateur
                     await _userManager.UpdateAsync(userToUpdate);
 
-                    // Gérer les rôles
                     var userRoles = await _userManager.GetRolesAsync(userToUpdate);
 
                     if (!string.IsNullOrEmpty(selectedRole) && !userRoles.Contains(selectedRole))
                     {
-                        // Retirer tous les rôles existants
                         await _userManager.RemoveFromRolesAsync(userToUpdate, userRoles);
 
-                        // Ajouter le nouveau rôle
                         await _userManager.AddToRoleAsync(userToUpdate, selectedRole);
                     }
 

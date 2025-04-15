@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using CESIZen.Models.ViewModels;
 using CesiZen.Controllers;
-using CESIZen.Models; // Ajoutez ceci pour accéder à la classe Utilisateur
+using CESIZen.Models; 
 
 namespace CESIZen.Controllers
 {
@@ -23,7 +23,6 @@ namespace CESIZen.Controllers
             _roleManager = _roleManager;
         }
 
-        // Action pour afficher la page de connexion
         [HttpGet]
         public IActionResult Login(string returnUrl = null)
         {
@@ -31,7 +30,6 @@ namespace CESIZen.Controllers
             return View();
         }
 
-        // Action pour traiter la connexion
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
@@ -59,7 +57,6 @@ namespace CESIZen.Controllers
             return View(model);
         }
 
-        // Action pour afficher la page d'inscription
         [HttpGet]
         public IActionResult Register(string returnUrl = null)
         {
@@ -67,7 +64,6 @@ namespace CESIZen.Controllers
             return View();
         }
 
-        // Action pour traiter l'inscription
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
@@ -75,14 +71,12 @@ namespace CESIZen.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                // Utilisez la classe Utilisateur au lieu de IdentityUser
                 var user = new Utilisateur
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    // Ajoutez les propriétés personnalisées
-                    Nom = model.Nom, // Assurez-vous que RegisterViewModel a cette propriété
-                    Prenom = model.Prenom, // Assurez-vous que RegisterViewModel a cette propriété
+                    Nom = model.Nom, 
+                    Prenom = model.Prenom, 
                     Statut = "Actif"
                 };
 
@@ -90,10 +84,8 @@ namespace CESIZen.Controllers
 
                 if (result.Succeeded)
                 {
-                    // Attribuer le rôle "User" par défaut
                     await _userManager.AddToRoleAsync(user, "User");
 
-                    // Connecter l'utilisateur immédiatement après l'inscription
                     await _signInManager.SignInAsync(user, isPersistent: false);
 
                     return RedirectToLocal(returnUrl);
@@ -108,7 +100,6 @@ namespace CESIZen.Controllers
             return View(model);
         }
 
-        // Action pour la déconnexion
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
@@ -117,7 +108,6 @@ namespace CESIZen.Controllers
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
-        // Méthode pour rediriger vers une URL locale
         private IActionResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
@@ -130,11 +120,108 @@ namespace CESIZen.Controllers
             }
         }
 
-        // Page d'accès refusé
         [HttpGet]
         public IActionResult AccessDenied()
         {
             return View();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Manage()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var model = new ManageAccountViewModel
+            {
+                Nom = user.Nom,
+                Prenom = user.Prenom,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Manage(ManageAccountViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            user.Nom = model.Nom;
+            user.Prenom = model.Prenom;
+            user.Email = model.Email;
+            user.UserName = model.Email;
+            user.PhoneNumber = model.PhoneNumber;
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                ViewData["Message"] = "Modifications enregistrées.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+            if (result.Succeeded)
+            {
+                await _signInManager.RefreshSignInAsync(user);
+                ViewData["Message"] = "Mot de passe modifié avec succès.";
+                return RedirectToAction("Index", "Home");
+
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
+        }
+
+
+
     }
 }

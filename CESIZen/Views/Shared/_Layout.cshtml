@@ -23,7 +23,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Accueil</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Information" asp-action="Consulter">Informations</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Information" asp-action="Index">Informations</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="ReponseQuestionnaires" asp-action="Formulaire">Questionnaire de stress</a>
@@ -37,7 +37,7 @@
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="adminDropdown">
                                     <li><a class="dropdown-item" asp-controller="User" asp-action="UsersList">Gestion des utilisateurs</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Information" asp-action="Index">Gestion des informations</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Information" asp-action="Index" asp-route-prefix="Admin">Gestion des informations</a></li>
                                     <li><a class="dropdown-item" asp-controller="QuestionnaireStresses" asp-action="Index">Gestion du diagnostic de stress</a></li>
                                 </ul>
                             </li>
@@ -47,7 +47,7 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <span class="nav-link text-dark">Bonjour, @User.Identity.Name!</span>
+                                <a class="nav-link text-dark" href="@Url.Action("Manage", "Account")">Bonjour, @User.Identity.Name!</a>
                             </li>
                             <li class="nav-item">
                                 <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="form-inline">
@@ -69,6 +69,7 @@
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()

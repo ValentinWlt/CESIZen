@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CESIZen.Controllers.Admin
 {
     [Authorize(Roles = "Admin")]
+    [Route("Admin/[controller]/[action]")]
     public class InformationController : Controller
     {
         private readonly CesiZenDbContext _context;
