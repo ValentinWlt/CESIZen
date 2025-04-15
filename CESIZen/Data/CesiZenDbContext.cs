@@ -13,13 +13,13 @@ namespace CesiZen.Data
         }
 
         public DbSet<Role> Roles { get; set; }
-
-        // Ici, remplacez LoginViewModel par Droit après avoir renommé la classe
+        public DbSet<Utilisateur> Utilisateurs { get; set; }
         public DbSet<Droit> Droits { get; set; }
-
         public DbSet<Information> Informations { get; set; }
-        public DbSet<Questionnaire> Questionnaires { get; set; }
-        public DbSet<Question> Questions { get; set; }
+        public DbSet<QuestionnaireStress> Questionnaires { get; set; }
+
+        public DbSet<ReponseQuestionnaire> ReponsesQuestionnaire { get; set; }
+        public DbSet<ReponseEvenement> ReponsesEvenement { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,11 +30,31 @@ namespace CesiZen.Data
                 .WithMany(i => i.Utilisateurs)
                 .UsingEntity(j => j.ToTable("UtilisateurInformation"));
 
-            // Assurez-vous que les noms des entités correspondent
             modelBuilder.Entity<Role>()
                 .HasMany(r => r.Droits)
                 .WithMany(d => d.Roles)
                 .UsingEntity(j => j.ToTable("Attribuer"));
+
+            modelBuilder.Entity<ReponseEvenement>()
+                .HasOne(re => re.ReponseQuestionnaire)
+                .WithMany(rq => rq.ReponsesEvenement)
+                .HasForeignKey(re => re.ReponseQuestionnaireId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ReponseQuestionnaire>()
+                .HasOne(rq => rq.Utilisateur)
+                .WithMany(u => u.ReponsesQuestionnaire)
+                .HasForeignKey(rq => rq.UtilisateurId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<QuestionnaireStress>().HasData(
+               new QuestionnaireStress { Id = 1, Libelle = "Décès du conjoint", Valeur = 100 },
+               new QuestionnaireStress { Id = 2, Libelle = "Divorce", Valeur = 73 },
+               new QuestionnaireStress { Id = 3, Libelle = "Séparation", Valeur = 65 },
+               new QuestionnaireStress { Id = 4, Libelle = "Prison", Valeur = 63 },
+               new QuestionnaireStress { Id = 5, Libelle = "Mort d'un proche", Valeur = 63 }
+             );
         }
     }
+
 }

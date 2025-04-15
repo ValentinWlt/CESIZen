@@ -18,7 +18,7 @@ namespace CESIZen.Models
         [StringLength(50)]
         public string Statut { get; set; }
 
-        [NotMapped] // Cette annotation indique que la propriété n'est pas stockée en base de données
+        [NotMapped] 
         public string Mail
         {
             get => Email;
@@ -37,6 +37,6 @@ namespace CESIZen.Models
         public virtual Role? Role { get; set; }
 
         public virtual ICollection<Information> Informations { get; set; } = new List<Information>();
-        public virtual ICollection<Questionnaire> Questionnaires { get; set; } = new List<Questionnaire>();
+        public virtual ICollection<ReponseQuestionnaire> ReponsesQuestionnaire { get; set; } = new List<ReponseQuestionnaire>();
     }
 }

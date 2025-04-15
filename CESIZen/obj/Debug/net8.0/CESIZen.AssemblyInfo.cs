@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CESIZen")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+629ae819bd29d5f9e99e1c9f6b662b8aebaf9dfd")]
 [assembly: System.Reflection.AssemblyProductAttribute("CESIZen")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CESIZen")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -74,7 +74,7 @@ namespace CESIZen.Migrations
                     b.ToTable("Informations");
                 });
 
-            modelBuilder.Entity("CESIZen.Models.Question", b =>
+            modelBuilder.Entity("CESIZen.Models.QuestionnaireStress", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -82,60 +82,103 @@ namespace CESIZen.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Points")
+                    b.Property<string>("Libelle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ReponseQuestionnaireId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Texte")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("TypeReponse")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<int>("Valeur")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Questions");
-                });
-
-            modelBuilder.Entity("CESIZen.Models.Questionnaire", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("DateCreation")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("ResultatNiveauStress")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Statut")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Titre")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
+                    b.HasIndex("ReponseQuestionnaireId");
 
                     b.ToTable("Questionnaires");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Libelle = "Décès du conjoint",
+                            Valeur = 100
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Libelle = "Divorce",
+                            Valeur = 73
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Libelle = "Séparation",
+                            Valeur = 65
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Libelle = "Prison",
+                            Valeur = 63
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Libelle = "Mort d'un proche",
+                            Valeur = 63
+                        });
+                });
+
+            modelBuilder.Entity("CESIZen.Models.ReponseEvenement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("EstSurvenu")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("QuestionnaireStressId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReponseQuestionnaireId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ValeurPoints")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionnaireStressId");
+
+                    b.HasIndex("ReponseQuestionnaireId");
+
+                    b.ToTable("ReponsesEvenement");
+                });
+
+            modelBuilder.Entity("CESIZen.Models.ReponseQuestionnaire", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateReponse")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UtilisateurId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UtilisateurId");
+
+                    b.ToTable("ReponsesQuestionnaire");
                 });
 
             modelBuilder.Entity("CESIZen.Models.Role", b =>
@@ -407,34 +450,41 @@ namespace CESIZen.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("QuestionQuestionnaire", b =>
+            modelBuilder.Entity("CESIZen.Models.QuestionnaireStress", b =>
                 {
-                    b.Property<int>("QuestionnairesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("QuestionsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("QuestionnairesId", "QuestionsId");
-
-                    b.HasIndex("QuestionsId");
-
-                    b.ToTable("QuestionQuestionnaire");
+                    b.HasOne("CESIZen.Models.ReponseQuestionnaire", null)
+                        .WithMany("EvenementsStress")
+                        .HasForeignKey("ReponseQuestionnaireId");
                 });
 
-            modelBuilder.Entity("QuestionnaireUtilisateur", b =>
+            modelBuilder.Entity("CESIZen.Models.ReponseEvenement", b =>
                 {
-                    b.Property<int>("QuestionnairesId")
-                        .HasColumnType("int");
+                    b.HasOne("CESIZen.Models.QuestionnaireStress", "QuestionnaireStress")
+                        .WithMany()
+                        .HasForeignKey("QuestionnaireStressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<int>("UtilisateursId")
-                        .HasColumnType("int");
+                    b.HasOne("CESIZen.Models.ReponseQuestionnaire", "ReponseQuestionnaire")
+                        .WithMany("ReponsesEvenement")
+                        .HasForeignKey("ReponseQuestionnaireId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasKey("QuestionnairesId", "UtilisateursId");
+                    b.Navigation("QuestionnaireStress");
 
-                    b.HasIndex("UtilisateursId");
+                    b.Navigation("ReponseQuestionnaire");
+                });
 
-                    b.ToTable("QuestionnaireUtilisateur");
+            modelBuilder.Entity("CESIZen.Models.ReponseQuestionnaire", b =>
+                {
+                    b.HasOne("CESIZen.Models.Utilisateur", "Utilisateur")
+                        .WithMany("ReponsesQuestionnaire")
+                        .HasForeignKey("UtilisateurId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Utilisateur");
                 });
 
             modelBuilder.Entity("CESIZen.Models.Utilisateur", b =>
@@ -527,39 +577,21 @@ namespace CESIZen.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("QuestionQuestionnaire", b =>
+            modelBuilder.Entity("CESIZen.Models.ReponseQuestionnaire", b =>
                 {
-                    b.HasOne("CESIZen.Models.Questionnaire", null)
-                        .WithMany()
-                        .HasForeignKey("QuestionnairesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("EvenementsStress");
 
-                    b.HasOne("CESIZen.Models.Question", null)
-                        .WithMany()
-                        .HasForeignKey("QuestionsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("QuestionnaireUtilisateur", b =>
-                {
-                    b.HasOne("CESIZen.Models.Questionnaire", null)
-                        .WithMany()
-                        .HasForeignKey("QuestionnairesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CESIZen.Models.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("UtilisateursId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("ReponsesEvenement");
                 });
 
             modelBuilder.Entity("CESIZen.Models.Role", b =>
                 {
                     b.Navigation("Utilisateurs");
+                });
+
+            modelBuilder.Entity("CESIZen.Models.Utilisateur", b =>
+                {
+                    b.Navigation("ReponsesQuestionnaire");
                 });
 #pragma warning restore 612, 618
         }

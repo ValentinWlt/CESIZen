@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CESIZen.Models.Question>
+﻿@model IEnumerable<CESIZen.Models.ReponseEvenement>
 
 @{
     ViewData["Title"] = "Index";
@@ -13,13 +13,16 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Texte)
+                @Html.DisplayNameFor(model => model.ReponseQuestionnaire)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Points)
+                @Html.DisplayNameFor(model => model.QuestionnaireStress)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TypeReponse)
+                @Html.DisplayNameFor(model => model.EstSurvenu)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ValeurPoints)
             </th>
             <th></th>
         </tr>
@@ -28,13 +31,16 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Texte)
+                @Html.DisplayFor(modelItem => item.ReponseQuestionnaire.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Points)
+                @Html.DisplayFor(modelItem => item.QuestionnaireStress.Libelle)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TypeReponse)
+                @Html.DisplayFor(modelItem => item.EstSurvenu)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ValeurPoints)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

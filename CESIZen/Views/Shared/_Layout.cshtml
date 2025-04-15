@@ -26,8 +26,9 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Information" asp-action="Consulter">Informations</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Questionnaires" asp-action="Index">Questionnaires</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="ReponseQuestionnaires" asp-action="Formulaire">Questionnaire de stress</a>
                         </li>
+
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item dropdown">
@@ -37,7 +38,7 @@
                                 <ul class="dropdown-menu" aria-labelledby="adminDropdown">
                                     <li><a class="dropdown-item" asp-controller="User" asp-action="UsersList">Gestion des utilisateurs</a></li>
                                     <li><a class="dropdown-item" asp-controller="Information" asp-action="Index">Gestion des informations</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Roles" asp-action="Index">Gestion des rôles</a></li>
+                                    <li><a class="dropdown-item" asp-controller="QuestionnaireStresses" asp-action="Index">Gestion du diagnostic de stress</a></li>
                                 </ul>
                             </li>
                         }

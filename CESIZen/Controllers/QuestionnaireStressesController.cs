@@ -10,22 +10,22 @@ using CesiZen.Data;
 
 namespace CESIZen.Controllers
 {
-    public class QuestionsController : Controller
+    public class QuestionnaireStressesController : Controller
     {
         private readonly CesiZenDbContext _context;
 
-        public QuestionsController(CesiZenDbContext context)
+        public QuestionnaireStressesController(CesiZenDbContext context)
         {
             _context = context;
         }
 
-        // GET: Questions
+        // GET: QuestionnaireStresses
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Questions.ToListAsync());
+            return View(await _context.Questionnaires.ToListAsync());
         }
 
-        // GET: Questions/Details/5
+        // GET: QuestionnaireStresses/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,39 +33,39 @@ namespace CESIZen.Controllers
                 return NotFound();
             }
 
-            var question = await _context.Questions
+            var questionnaireStress = await _context.Questionnaires
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (question == null)
+            if (questionnaireStress == null)
             {
                 return NotFound();
             }
 
-            return View(question);
+            return View(questionnaireStress);
         }
 
-        // GET: Questions/Create
+        // GET: QuestionnaireStresses/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Questions/Create
+        // POST: QuestionnaireStresses/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Texte,Points,TypeReponse")] Question question)
+        public async Task<IActionResult> Create([Bind("Id,Libelle,Valeur")] QuestionnaireStress questionnaireStress)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(question);
+                _context.Add(questionnaireStress);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(question);
+            return View(questionnaireStress);
         }
 
-        // GET: Questions/Edit/5
+        // GET: QuestionnaireStresses/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -73,22 +73,22 @@ namespace CESIZen.Controllers
                 return NotFound();
             }
 
-            var question = await _context.Questions.FindAsync(id);
-            if (question == null)
+            var questionnaireStress = await _context.Questionnaires.FindAsync(id);
+            if (questionnaireStress == null)
             {
                 return NotFound();
             }
-            return View(question);
+            return View(questionnaireStress);
         }
 
-        // POST: Questions/Edit/5
+        // POST: QuestionnaireStresses/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Texte,Points,TypeReponse")] Question question)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Libelle,Valeur")] QuestionnaireStress questionnaireStress)
         {
-            if (id != question.Id)
+            if (id != questionnaireStress.Id)
             {
                 return NotFound();
             }
@@ -97,12 +97,12 @@ namespace CESIZen.Controllers
             {
                 try
                 {
-                    _context.Update(question);
+                    _context.Update(questionnaireStress);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!QuestionExists(question.Id))
+                    if (!QuestionnaireStressExists(questionnaireStress.Id))
                     {
                         return NotFound();
                     }
@@ -113,10 +113,10 @@ namespace CESIZen.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(question);
+            return View(questionnaireStress);
         }
 
-        // GET: Questions/Delete/5
+        // GET: QuestionnaireStresses/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -124,34 +124,34 @@ namespace CESIZen.Controllers
                 return NotFound();
             }
 
-            var question = await _context.Questions
+            var questionnaireStress = await _context.Questionnaires
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (question == null)
+            if (questionnaireStress == null)
             {
                 return NotFound();
             }
 
-            return View(question);
+            return View(questionnaireStress);
         }
 
-        // POST: Questions/Delete/5
+        // POST: QuestionnaireStresses/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var question = await _context.Questions.FindAsync(id);
-            if (question != null)
+            var questionnaireStress = await _context.Questionnaires.FindAsync(id);
+            if (questionnaireStress != null)
             {
-                _context.Questions.Remove(question);
+                _context.Questionnaires.Remove(questionnaireStress);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool QuestionExists(int id)
+        private bool QuestionnaireStressExists(int id)
         {
-            return _context.Questions.Any(e => e.Id == id);
+            return _context.Questionnaires.Any(e => e.Id == id);
         }
     }
 }
