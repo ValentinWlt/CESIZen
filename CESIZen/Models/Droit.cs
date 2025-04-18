@@ -12,7 +12,6 @@ namespace CESIZen.Models
         [StringLength(50)]
         public string TypeDroit { get; set; }
 
-        // Navigation properties
         public virtual ICollection<Role> Roles { get; set; } = new List<Role>();
     }
 }

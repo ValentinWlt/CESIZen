@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore;
 namespace CESIZen.Controllers.Admin
 {
     [Authorize(Roles = "Admin")]
-    public class UserController : Controller
+    public class UserAdminController : Controller
     {
         private readonly UserManager<Utilisateur> _userManager;
         private readonly RoleManager<IdentityRole<int>> _roleManager;
-        public UserController(UserManager<Utilisateur> userManager, RoleManager<IdentityRole<int>> roleManager)
+        public UserAdminController(UserManager<Utilisateur> userManager, RoleManager<IdentityRole<int>> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;

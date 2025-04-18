@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@{
+    Layout = null;
+    ViewContext.RouteData.Values["area"] = null;
+}
+
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="utf-8" />
@@ -36,9 +41,9 @@
                                     Administration
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="adminDropdown">
-                                    <li><a class="dropdown-item" asp-controller="User" asp-action="UsersList">Gestion des utilisateurs</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Information" asp-action="Index" asp-route-prefix="Admin">Gestion des informations</a></li>
-                                    <li><a class="dropdown-item" asp-controller="QuestionnaireStresses" asp-action="Index">Gestion du diagnostic de stress</a></li>
+                                    <li><a class="dropdown-item" asp-controller="UserAdmin" asp-action="UsersList">Gestion des utilisateurs</a></li>
+                                    <li><a class="dropdown-item" asp-controller="InformationAdmin" asp-action="Index" asp-route-prefix="Admin">Gestion des informations</a></li>
+                                    <li><a class="dropdown-item" asp-controller="QuestionnaireStressesAdmin" asp-action="Index">Gestion du diagnostic de stress</a></li>
                                 </ul>
                             </li>
                         }

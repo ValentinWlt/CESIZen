@@ -47,13 +47,7 @@ namespace CesiZen.Data
                 .HasForeignKey(rq => rq.UtilisateurId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<QuestionnaireStress>().HasData(
-               new QuestionnaireStress { Id = 1, Libelle = "Décès du conjoint", Valeur = 100 },
-               new QuestionnaireStress { Id = 2, Libelle = "Divorce", Valeur = 73 },
-               new QuestionnaireStress { Id = 3, Libelle = "Séparation", Valeur = 65 },
-               new QuestionnaireStress { Id = 4, Libelle = "Prison", Valeur = 63 },
-               new QuestionnaireStress { Id = 5, Libelle = "Mort d'un proche", Valeur = 63 }
-             );
+
         }
     }
 

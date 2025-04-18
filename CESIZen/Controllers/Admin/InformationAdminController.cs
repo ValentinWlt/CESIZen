@@ -8,11 +8,11 @@ namespace CESIZen.Controllers.Admin
 {
     [Authorize(Roles = "Admin")]
     [Route("Admin/[controller]/[action]")]
-    public class InformationController : Controller
+    public class InformationAdminController : Controller
     {
         private readonly CesiZenDbContext _context;
 
-        public InformationController(CesiZenDbContext context)
+        public InformationAdminController(CesiZenDbContext context)
         {
             _context = context;
         }

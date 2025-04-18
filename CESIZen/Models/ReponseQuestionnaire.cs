@@ -9,12 +9,12 @@ namespace CESIZen.Models
         public int Id { get; set; }
 
         [Required]
-        public int UtilisateurId { get; set; } 
+        public int? UtilisateurId { get; set; }  // nullable FK
 
         [Display(Name = "Date de réponse")]
         public DateTime DateReponse { get; set; } = DateTime.Now;
 
-        public virtual Utilisateur Utilisateur { get; set; }
+        public Utilisateur? Utilisateur { get; set; }
 
         public virtual ICollection<QuestionnaireStress> EvenementsStress { get; set; } = new List<QuestionnaireStress>();
         public virtual ICollection<ReponseEvenement> ReponsesEvenement { get; set; } = new List<ReponseEvenement>();

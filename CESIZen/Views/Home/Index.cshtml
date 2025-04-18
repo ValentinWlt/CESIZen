@@ -5,33 +5,38 @@
 <div class="text-center">
     <h1 class="display-4 mt-5 mb-5">CESIZen l'application de votre santé mentale</h1>
 
-    <div class="row mt-5">
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <div class="d-flex justify-content-center mb-5">
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Votre Espace</h5>
+                        <p class="card-text">Créez un compte pour suivre votre progression et recevoir des recommandations personnalisées.</p>
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-primary">S'inscrire</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="d-flex justify-content-center flex-wrap gap-4">
         <div class="col-md-4">
-            <div class="card shadow-sm mb-4">
+            <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Questionnaires</h5>
                     <p class="card-text">Évaluez votre niveau de stress et votre bien-être mental grâce à nos questionnaires.</p>
-                    <a asp-controller="Questionnaires" asp-action="Index" class="btn btn-primary">Commencer</a>
+                    <a asp-controller="ReponseQuestionnaires" asp-action="Formulaire" class="btn btn-primary">Commencer</a>
                 </div>
             </div>
         </div>
 
         <div class="col-md-4">
-            <div class="card shadow-sm mb-4">
+            <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Informations</h5>
                     <p class="card-text">Découvrez des conseils et des ressources pour améliorer votre santé mentale.</p>
-                    <a asp-controller="Informations" asp-action="Index" class="btn btn-primary">Consulter</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Votre Espace</h5>
-                    <p class="card-text">Créez un compte pour suivre votre progression et recevoir des recommandations personnalisées.</p>
-                    <a asp-controller="Account" asp-action="Register" class="btn btn-primary">S'inscrire</a>
+                    <a asp-controller="Information" asp-action="Index" class="btn btn-primary">Consulter</a>
                 </div>
             </div>
         </div>

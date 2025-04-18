@@ -1,31 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+﻿using CesiZen.Data;
 using CESIZen.Models;
-using CesiZen.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
-namespace CESIZen.Controllers
+namespace CESIZen.Controllers.Admin
 {
-    public class DroitsController : Controller
+    [Authorize(Roles = "Admin")]
+    [Route("Admin/[controller]/[action]")]
+    public class QuestionnaireStressesAdminController : Controller
     {
         private readonly CesiZenDbContext _context;
 
-        public DroitsController(CesiZenDbContext context)
+        public QuestionnaireStressesAdminController(CesiZenDbContext context)
         {
             _context = context;
         }
 
-        // GET: Droits
+        // GET: QuestionnaireStresses
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Droits.ToListAsync());
+            var evenements = await _context.Questionnaires
+                .OrderByDescending(q => q.Valeur)
+                .ToListAsync();
+
+            return View("~/Views/Admin/QuestionnaireStress/Index.cshtml", evenements);
         }
 
-        // GET: Droits/Details/5
+        // GET: QuestionnaireStresses/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,39 +35,39 @@ namespace CESIZen.Controllers
                 return NotFound();
             }
 
-            var droit = await _context.Droits
+            var questionnaireStress = await _context.Questionnaires
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (droit == null)
+            if (questionnaireStress == null)
             {
                 return NotFound();
             }
 
-            return View(droit);
+            return View("~/Views/Admin/QuestionnaireStress/Details.cshtml", questionnaireStress);
         }
 
-        // GET: Droits/Create
+        // GET: QuestionnaireStresses/Create
         public IActionResult Create()
         {
-            return View();
+            return View("~/Views/Admin/QuestionnaireStress/Create.cshtml");
         }
 
-        // POST: Droits/Create
+        // POST: QuestionnaireStresses/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,TypeDroit")] Droit droit)
+        public async Task<IActionResult> Create([Bind("Id,Libelle,Valeur")] QuestionnaireStress questionnaireStress)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(droit);
+                _context.Add(questionnaireStress);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(droit);
+            return View("~/Views/Admin/QuestionnaireStress/Create.cshtml", questionnaireStress);
         }
 
-        // GET: Droits/Edit/5
+        // GET: QuestionnaireStresses/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -73,22 +75,22 @@ namespace CESIZen.Controllers
                 return NotFound();
             }
 
-            var droit = await _context.Droits.FindAsync(id);
-            if (droit == null)
+            var questionnaireStress = await _context.Questionnaires.FindAsync(id);
+            if (questionnaireStress == null)
             {
                 return NotFound();
             }
-            return View(droit);
+            return View("~/Views/Admin/QuestionnaireStress/Edit.cshtml", questionnaireStress);
         }
 
-        // POST: Droits/Edit/5
+        // POST: QuestionnaireStresses/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,TypeDroit")] Droit droit)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Libelle,Valeur")] QuestionnaireStress questionnaireStress)
         {
-            if (id != droit.Id)
+            if (id != questionnaireStress.Id)
             {
                 return NotFound();
             }
@@ -97,12 +99,12 @@ namespace CESIZen.Controllers
             {
                 try
                 {
-                    _context.Update(droit);
+                    _context.Update(questionnaireStress);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DroitExists(droit.Id))
+                    if (!QuestionnaireStressExists(questionnaireStress.Id))
                     {
                         return NotFound();
                     }
@@ -113,10 +115,10 @@ namespace CESIZen.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(droit);
+            return View("~/Views/Admin/QuestionnaireStress/Edit.cshtml", questionnaireStress);
         }
 
-        // GET: Droits/Delete/5
+        // GET: QuestionnaireStresses/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -124,34 +126,34 @@ namespace CESIZen.Controllers
                 return NotFound();
             }
 
-            var droit = await _context.Droits
+            var questionnaireStress = await _context.Questionnaires
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (droit == null)
+            if (questionnaireStress == null)
             {
                 return NotFound();
             }
 
-            return View(droit);
+            return View("~/Views/Admin/QuestionnaireStress/Delete.cshtml", questionnaireStress);
         }
 
-        // POST: Droits/Delete/5
+        // POST: QuestionnaireStresses/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var droit = await _context.Droits.FindAsync(id);
-            if (droit != null)
+            var questionnaireStress = await _context.Questionnaires.FindAsync(id);
+            if (questionnaireStress != null)
             {
-                _context.Droits.Remove(droit);
+                _context.Questionnaires.Remove(questionnaireStress);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool DroitExists(int id)
+        private bool QuestionnaireStressExists(int id)
         {
-            return _context.Droits.Any(e => e.Id == id);
+            return _context.Questionnaires.Any(e => e.Id == id);
         }
     }
 }
