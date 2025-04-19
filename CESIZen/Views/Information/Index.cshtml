@@ -9,7 +9,7 @@
 <div class="accordion" id="infoAccordion">
     @foreach (var info in Model)
     {
-        <div class="accordion-item">
+        <div class="accordion-item mb-2">
             <h2 class="accordion-header" id="heading@(info.Id)">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse@(info.Id)">
                     @info.Titre

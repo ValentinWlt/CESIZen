@@ -18,14 +18,12 @@ namespace CESIZen.Models
         [StringLength(50)]
         public string Statut { get; set; }
 
-        [NotMapped] 
         public string Mail
         {
             get => Email;
             set => Email = value;
         }
 
-        [NotMapped]
         public string Tel
         {
             get => PhoneNumber;

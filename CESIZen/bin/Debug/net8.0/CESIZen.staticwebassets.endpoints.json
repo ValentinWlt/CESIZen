@@ -2319,7 +2319,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "969"
+          "Value": "1161"
         },
         {
           "Name": "Content-Type",
@@ -2327,22 +2327,22 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"nhLqAG89s9xdr7sVPlgirKnsp5gahiFq3icqgzIw4xI=\""
+          "Value": "\"GSUWcU0FshFxjQfeXK/Av8fwiAsxUmriElTqVhvz6TU=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 15 Apr 2025 16:43:41 GMT"
+          "Value": "Sat, 19 Apr 2025 14:48:34 GMT"
         }
       ],
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-nhLqAG89s9xdr7sVPlgirKnsp5gahiFq3icqgzIw4xI="
+          "Value": "sha256-GSUWcU0FshFxjQfeXK/Av8fwiAsxUmriElTqVhvz6TU="
         }
       ]
     },
     {
-      "Route": "css/site.ug0dfo436x.css",
+      "Route": "css/site.tvy67i449s.css",
       "AssetFile": "css/site.css",
       "Selectors": [],
       "ResponseHeaders": [
@@ -2356,7 +2356,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "969"
+          "Value": "1161"
         },
         {
           "Name": "Content-Type",
@@ -2364,21 +2364,21 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"nhLqAG89s9xdr7sVPlgirKnsp5gahiFq3icqgzIw4xI=\""
+          "Value": "\"GSUWcU0FshFxjQfeXK/Av8fwiAsxUmriElTqVhvz6TU=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 15 Apr 2025 16:43:41 GMT"
+          "Value": "Sat, 19 Apr 2025 14:48:34 GMT"
         }
       ],
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "ug0dfo436x"
+          "Value": "tvy67i449s"
         },
         {
           "Name": "integrity",
-          "Value": "sha256-nhLqAG89s9xdr7sVPlgirKnsp5gahiFq3icqgzIw4xI="
+          "Value": "sha256-GSUWcU0FshFxjQfeXK/Av8fwiAsxUmriElTqVhvz6TU="
         },
         {
           "Name": "label",
@@ -2465,6 +2465,88 @@
         {
           "Name": "integrity",
           "Value": "sha256-Jtxf9L+5ITKRc1gIRl4VbUpGkRNfOBXjYTdhJD4facM="
+        }
+      ]
+    },
+    {
+      "Route": "images/Logo.PNG",
+      "AssetFile": "images/Logo.PNG",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "19182"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Q+auvmdUhyJ0skX//nIAboPxqVE3d+UILhop3VR7A60=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 19 Apr 2025 13:40:11 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Q+auvmdUhyJ0skX//nIAboPxqVE3d+UILhop3VR7A60="
+        }
+      ]
+    },
+    {
+      "Route": "images/Logo.nfpyddrknp.PNG",
+      "AssetFile": "images/Logo.PNG",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "19182"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Q+auvmdUhyJ0skX//nIAboPxqVE3d+UILhop3VR7A60=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 19 Apr 2025 13:40:11 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "nfpyddrknp"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Q+auvmdUhyJ0skX//nIAboPxqVE3d+UILhop3VR7A60="
+        },
+        {
+          "Name": "label",
+          "Value": "images/Logo.PNG"
         }
       ]
     },

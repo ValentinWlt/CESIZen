@@ -4,7 +4,7 @@
     ViewData["Title"] = "Diagnostic de stress";
 }
 
-<h2>Diagnostic de stress</h2>
+<h2 class="h2">Diagnostic de stress</h2>
 
 <form asp-action="Submit" method="post">
     <div class="form-group">
@@ -12,18 +12,19 @@
 
         @for (int i = 0; i < Model.Count; i++)
         {
-            <div class="form-check">
+            <div class="form-check mb-3">
                 <input type="checkbox"
                        class="form-check-input"
                        name="evenementsSelectionnesIds"
                        value="@Model[i].Id"
                        id="evenement_@Model[i].Id" />
                 <label class="form-check-label" for="evenement_@Model[i].Id">
-                    @Model[i].Libelle (@Model[i].Valeur points)
+                    @Model[i].Libelle (@Model[i].Valeur pts)
                 </label>
             </div>
         }
     </div>
 
-    <button type="submit" class="btn btn-primary mt-3">Soumettre</button>
+    <button type="submit" class="btn btn-primary mt-3 d-block mx-auto d-sm-inline">Soumettre</button>
+
 </form>

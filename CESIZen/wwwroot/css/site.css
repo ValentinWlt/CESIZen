@@ -57,3 +57,17 @@ body {
 .btn-primary {
     padding: 0.5rem 1.5rem;
 }
+
+@media (max-width: 576px) {
+    .h2  {
+        text-align: center;
+    }
+
+    .button {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+    }
+    
+}
