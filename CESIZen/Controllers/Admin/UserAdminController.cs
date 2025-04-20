@@ -37,33 +37,6 @@ namespace CESIZen.Controllers.Admin
             return View("~/Views/Admin/Users/Index.cshtml", users);
         }
 
-        // Promeut un utilisateur au rôle d'administrateur
-        public async Task<IActionResult> PromoteToAdmin(string id)
-        {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            await _userManager.AddToRoleAsync(user, "Admin");
-            return RedirectToAction(nameof(UsersList));
-        }
-
-        // Rétrograde un administrateur au rôle utilisateur
-        public async Task<IActionResult> DemoteToUser(string id)
-        {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            await _userManager.RemoveFromRoleAsync(user, "Admin");
-            await _userManager.AddToRoleAsync(user, "User");
-            return RedirectToAction(nameof(UsersList));
-        }
-
         // GET: Admin/Details/5
         public async Task<IActionResult> Details(int id)
         {
