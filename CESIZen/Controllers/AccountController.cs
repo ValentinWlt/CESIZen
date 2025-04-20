@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using CESIZen.Models.ViewModels;
 using CesiZen.Controllers;
-using CESIZen.Models; 
+using CESIZen.Models;
 
 namespace CESIZen.Controllers
 {
@@ -75,8 +75,8 @@ namespace CESIZen.Controllers
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    Nom = model.Nom, 
-                    Prenom = model.Prenom, 
+                    Nom = model.Nom,
+                    Prenom = model.Prenom,
                     Statut = "Actif"
                 };
 

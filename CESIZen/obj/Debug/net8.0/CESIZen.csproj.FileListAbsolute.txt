@@ -814,3 +814,5 @@ C:\Users\Valentin Waultier\Desktop\Cours\Bachelor\Projet Individuel CESIZen\CESI
 C:\Users\Valentin Waultier\Desktop\Cours\Bachelor\Projet Individuel CESIZen\CESIZen\CESIZen\obj\Debug\net8.0\CESIZen.pdb
 C:\Users\Valentin Waultier\Desktop\Cours\Bachelor\Projet Individuel CESIZen\CESIZen\CESIZen\obj\Debug\net8.0\CESIZen.genruntimeconfig.cache
 C:\Users\Valentin Waultier\Desktop\Cours\Bachelor\Projet Individuel CESIZen\CESIZen\CESIZen\obj\Debug\net8.0\ref\CESIZen.dll
+C:\Users\Valentin Waultier\Desktop\Cours\Bachelor\Projet Individuel CESIZen\CESIZen\CESIZen\bin\Debug\net8.0\Castle.Core.dll
+C:\Users\Valentin Waultier\Desktop\Cours\Bachelor\Projet Individuel CESIZen\CESIZen\CESIZen\bin\Debug\net8.0\Moq.dll

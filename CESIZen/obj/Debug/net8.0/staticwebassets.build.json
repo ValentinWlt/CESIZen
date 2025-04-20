@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "RJrMa2XmwjZzfPm46L7c0OHQsA0lJ6gg9WIGihLiEoA=",
+  "Hash": "NvfLg3zemhGNhiWd9zhq2hY8e/otZCOa4+2VROR0yzs=",
   "Source": "CESIZen",
   "BasePath": "_content/CESIZen",
   "Mode": "Default",
@@ -1333,8 +1333,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "tvy67i449s",
-      "Integrity": "GSUWcU0FshFxjQfeXK/Av8fwiAsxUmriElTqVhvz6TU=",
+      "Fingerprint": "y2eevuzpbk",
+      "Integrity": "NppdwY7U+PrfLqwaBId6c9GAMX+/vsY2FPpXAT+FWzY=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\site.css"
@@ -2624,7 +2624,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 15 Apr 2025 16:43:41 GMT"
+          "Value": "Sun, 20 Apr 2025 13:13:26 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2661,7 +2661,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 15 Apr 2025 16:43:41 GMT"
+          "Value": "Sun, 20 Apr 2025 13:13:26 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2706,7 +2706,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 15 Apr 2025 16:43:41 GMT"
+          "Value": "Sun, 20 Apr 2025 13:13:26 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2751,7 +2751,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 15 Apr 2025 16:43:41 GMT"
+          "Value": "Sun, 20 Apr 2025 13:13:26 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2776,7 +2776,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1161"
+          "Value": "1190"
         },
         {
           "Name": "Content-Type",
@@ -2784,11 +2784,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"GSUWcU0FshFxjQfeXK/Av8fwiAsxUmriElTqVhvz6TU=\""
+          "Value": "\"NppdwY7U+PrfLqwaBId6c9GAMX+/vsY2FPpXAT+FWzY=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 19 Apr 2025 14:48:34 GMT"
+          "Value": "Sat, 19 Apr 2025 14:58:04 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2798,12 +2798,12 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-GSUWcU0FshFxjQfeXK/Av8fwiAsxUmriElTqVhvz6TU="
+          "Value": "sha256-NppdwY7U+PrfLqwaBId6c9GAMX+/vsY2FPpXAT+FWzY="
         }
       ]
     },
     {
-      "Route": "css/site.tvy67i449s.css",
+      "Route": "css/site.y2eevuzpbk.css",
       "AssetFile": "C:\\Users\\Valentin Waultier\\Desktop\\Cours\\Bachelor\\Projet Individuel CESIZen\\CESIZen\\CESIZen\\wwwroot\\css\\site.css",
       "Selectors": [],
       "ResponseHeaders": [
@@ -2813,7 +2813,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1161"
+          "Value": "1190"
         },
         {
           "Name": "Content-Type",
@@ -2821,11 +2821,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"GSUWcU0FshFxjQfeXK/Av8fwiAsxUmriElTqVhvz6TU=\""
+          "Value": "\"NppdwY7U+PrfLqwaBId6c9GAMX+/vsY2FPpXAT+FWzY=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 19 Apr 2025 14:48:34 GMT"
+          "Value": "Sat, 19 Apr 2025 14:58:04 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2835,7 +2835,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "tvy67i449s"
+          "Value": "y2eevuzpbk"
         },
         {
           "Name": "label",
@@ -2843,7 +2843,7 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-GSUWcU0FshFxjQfeXK/Av8fwiAsxUmriElTqVhvz6TU="
+          "Value": "sha256-NppdwY7U+PrfLqwaBId6c9GAMX+/vsY2FPpXAT+FWzY="
         }
       ]
     },

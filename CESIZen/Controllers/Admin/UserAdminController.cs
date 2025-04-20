@@ -180,18 +180,15 @@ namespace CESIZen.Controllers.Admin
         // GET: Admin/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            // Récupérer l'utilisateur à partir de son ID
             var utilisateur = await _userManager.FindByIdAsync(id.ToString());
             if (utilisateur == null)
             {
                 return NotFound();
             }
 
-            // Récupérer tous les rôles disponibles pour la liste déroulante
             var roles = await _roleManager.Roles.ToListAsync();
             ViewBag.AvailableRoles = new SelectList(roles, "Name", "Name");
 
-            // Récupérer les rôles actuels de l'utilisateur
             var userRoles = await _userManager.GetRolesAsync(utilisateur);
             ViewBag.UserRoles = userRoles;
 
@@ -212,7 +209,6 @@ namespace CESIZen.Controllers.Admin
             {
                 try
                 {
-                    // Récupérer l'utilisateur original de la base de données
                     var userToUpdate = await _userManager.FindByIdAsync(id.ToString());
                     if (userToUpdate == null)
                     {
