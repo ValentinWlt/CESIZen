@@ -13,6 +13,5 @@ namespace CESIZen.Models
         public string NomRole { get; set; }
 
         public virtual ICollection<Utilisateur> Utilisateurs { get; set; }
-        public virtual ICollection<Droit> Droits { get; set; } = new List<Droit>();
     }
 }

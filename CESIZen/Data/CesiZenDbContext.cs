@@ -14,7 +14,6 @@ namespace CesiZen.Data
 
         public DbSet<Role> Roles { get; set; }
         public DbSet<Utilisateur> Utilisateurs { get; set; }
-        public DbSet<Droit> Droits { get; set; }
         public DbSet<Information> Informations { get; set; }
         public DbSet<QuestionnaireStress> Questionnaires { get; set; }
 
@@ -29,11 +28,6 @@ namespace CesiZen.Data
                 .HasMany(u => u.Informations)
                 .WithMany(i => i.Utilisateurs)
                 .UsingEntity(j => j.ToTable("UtilisateurInformation"));
-
-            modelBuilder.Entity<Role>()
-                .HasMany(r => r.Droits)
-                .WithMany(d => d.Roles)
-                .UsingEntity(j => j.ToTable("Attribuer"));
 
             modelBuilder.Entity<ReponseEvenement>()
                 .HasOne(re => re.ReponseQuestionnaire)
