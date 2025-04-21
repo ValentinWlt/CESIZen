@@ -12,10 +12,5 @@ namespace CESIZen.Models
         public int QuestionnaireStressId { get; set; }
         public virtual QuestionnaireStress QuestionnaireStress { get; set; }
 
-        public bool EstSurvenu { get; set; }
-
-        public int ValeurPoints { get; set; }
-
-
     }
 }

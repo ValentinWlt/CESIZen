@@ -4,13 +4,13 @@
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\CESIZen.cf6lo2ichw.bundle.scp.css'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
       <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-OGz5pxgCDU\u002BAMC2/F3Xn0SSUrZfULg\u002Bsa3n52341pMU="}]]]></EndpointProperties>
-      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"1125"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022OGz5pxgCDU\u002BAMC2/F3Xn0SSUrZfULg\u002Bsa3n52341pMU=\u0022"},{"Name":"Last-Modified","Value":"Sun, 20 Apr 2025 13:13:26 GMT"}]]]></ResponseHeaders>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"1125"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022OGz5pxgCDU\u002BAMC2/F3Xn0SSUrZfULg\u002Bsa3n52341pMU=\u0022"},{"Name":"Last-Modified","Value":"Mon, 21 Apr 2025 12:28:32 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/CESIZen/CESIZen.cf6lo2ichw.bundle.scp.css">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\CESIZen.cf6lo2ichw.bundle.scp.css'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
       <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"cf6lo2ichw"},{"Name":"integrity","Value":"sha256-OGz5pxgCDU\u002BAMC2/F3Xn0SSUrZfULg\u002Bsa3n52341pMU="},{"Name":"label","Value":"_content/CESIZen/CESIZen.bundle.scp.css"}]]]></EndpointProperties>
-      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"1125"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022OGz5pxgCDU\u002BAMC2/F3Xn0SSUrZfULg\u002Bsa3n52341pMU=\u0022"},{"Name":"Last-Modified","Value":"Sun, 20 Apr 2025 13:13:26 GMT"}]]]></ResponseHeaders>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"1125"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022OGz5pxgCDU\u002BAMC2/F3Xn0SSUrZfULg\u002Bsa3n52341pMU=\u0022"},{"Name":"Last-Modified","Value":"Mon, 21 Apr 2025 12:28:32 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/CESIZen/css/site.css">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\site.css'))</AssetFile>
