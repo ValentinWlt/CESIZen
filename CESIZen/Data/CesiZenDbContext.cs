@@ -12,7 +12,6 @@ namespace CesiZen.Data
         {
         }
 
-        public DbSet<Role> Roles { get; set; }
         public DbSet<Utilisateur> Utilisateurs { get; set; }
         public DbSet<Information> Informations { get; set; }
         public DbSet<QuestionnaireStress> Questionnaires { get; set; }

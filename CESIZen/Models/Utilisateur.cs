@@ -32,10 +32,6 @@ namespace CESIZen.Models
             set => PhoneNumber = value;
         }
 
-        [ForeignKey("Role")]
-        public int? IdRole { get; set; }
-        public virtual Role? Role { get; set; }
-
         public virtual ICollection<Information> Informations { get; set; } = new List<Information>();
         public virtual ICollection<ReponseQuestionnaire> ReponsesQuestionnaire { get; set; } = new List<ReponseQuestionnaire>();
     }

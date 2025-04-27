@@ -9,7 +9,7 @@ namespace CESIZen.Models
         public int Id { get; set; }
 
         [Required]
-        public int? UtilisateurId { get; set; }  // nullable FK
+        public int? UtilisateurId { get; set; }  
 
         [Display(Name = "Date de réponse")]
         public DateTime DateReponse { get; set; } = DateTime.Now;
