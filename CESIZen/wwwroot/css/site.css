@@ -58,6 +58,11 @@ body {
     padding: 0.5rem 1.5rem;
 }
 
+.accordion-body p {
+    word-wrap: break-word;
+    white-space: normal; 
+}
+
 @media (max-width: 576px) {
     .h2  {
         text-align: center;
