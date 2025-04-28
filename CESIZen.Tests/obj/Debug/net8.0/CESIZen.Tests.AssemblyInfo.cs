@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CESIZen.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2463314dbcf1cc24333ea57ec3ff58a8fa335d8e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fd2c33b771762495575b0f649e69498b750945bb")]
 [assembly: System.Reflection.AssemblyProductAttribute("CESIZen.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CESIZen.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

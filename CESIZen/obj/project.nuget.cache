@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "8mLzy1f1Q/k=",
+  "dgSpecHash": "A9vPC8a/lK0=",
   "success": true,
   "projectFilePath": "C:\\Users\\Valentin Waultier\\Desktop\\Cours\\Bachelor\\Projet Individuel CESIZen\\CESIZen\\CESIZen\\CESIZen.csproj",
   "expectedPackageFiles": [
@@ -134,6 +134,8 @@
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\nuget.projectmodel\\6.11.0\\nuget.projectmodel.6.11.0.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\nuget.protocol\\6.11.0\\nuget.protocol.6.11.0.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\nuget.versioning\\6.11.0\\nuget.versioning.6.11.0.nupkg.sha512",
+    "C:\\Users\\Valentin Waultier\\.nuget\\packages\\runtime.any.system.runtime\\4.3.0\\runtime.any.system.runtime.4.3.0.nupkg.sha512",
+    "C:\\Users\\Valentin Waultier\\.nuget\\packages\\runtime.any.system.text.encoding\\4.3.0\\runtime.any.system.text.encoding.4.3.0.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.clientmodel\\1.0.0\\system.clientmodel.1.0.0.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.codedom\\5.0.0\\system.codedom.5.0.0.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.collections.immutable\\7.0.0\\system.collections.immutable.7.0.0.nupkg.sha512",
@@ -154,6 +156,7 @@
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.memory\\4.5.4\\system.memory.4.5.4.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.memory.data\\1.0.2\\system.memory.data.1.0.2.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",
+    "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.private.uri\\4.3.0\\system.private.uri.4.3.0.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.reflection.metadata\\7.0.0\\system.reflection.metadata.7.0.0.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.reflection.metadataloadcontext\\7.0.0\\system.reflection.metadataloadcontext.7.0.0.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.runtime\\4.3.0\\system.runtime.4.3.0.nupkg.sha512",
@@ -171,7 +174,10 @@
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.threading.channels\\7.0.0\\system.threading.channels.7.0.0.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.threading.tasks.dataflow\\7.0.0\\system.threading.tasks.dataflow.7.0.0.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512",
-    "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.windows.extensions\\7.0.0\\system.windows.extensions.7.0.0.nupkg.sha512"
+    "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.windows.extensions\\7.0.0\\system.windows.extensions.7.0.0.nupkg.sha512",
+    "C:\\Users\\Valentin Waultier\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\8.0.14\\microsoft.netcore.app.runtime.win-x64.8.0.14.nupkg.sha512",
+    "C:\\Users\\Valentin Waultier\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\8.0.14\\microsoft.windowsdesktop.app.runtime.win-x64.8.0.14.nupkg.sha512",
+    "C:\\Users\\Valentin Waultier\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\8.0.14\\microsoft.aspnetcore.app.runtime.win-x64.8.0.14.nupkg.sha512"
   ],
   "logs": []
 }
