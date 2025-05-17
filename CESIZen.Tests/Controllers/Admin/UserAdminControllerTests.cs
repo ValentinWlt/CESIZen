@@ -360,12 +360,5 @@ namespace CESIZen.Tests.Controllers.Admin
 
             mockUserManager.Verify(m => m.DeleteAsync(utilisateur), Times.Once);
         }
-
-
-
-
-
-
-
     }
 }

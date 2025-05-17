@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Er62xZxqszILCBAqLJdJRKHJqU7O3xdl49YcGpTYlmA=",
+  "Hash": "IddZ+5qH752jg/pB3Z+CDG2Jhf9JVakSjXnVzOt4aAU=",
   "Source": "CESIZen",
   "BasePath": "_content/CESIZen",
   "Mode": "Default",
@@ -1333,8 +1333,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "y2eevuzpbk",
-      "Integrity": "NppdwY7U+PrfLqwaBId6c9GAMX+/vsY2FPpXAT+FWzY=",
+      "Fingerprint": "899zmo3k4x",
+      "Integrity": "ZIDhAM48ccm4YKI7xcj+s0aZQe/S9cXe/7F9YIRBxRI=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\site.css"
@@ -2766,6 +2766,51 @@
       ]
     },
     {
+      "Route": "css/site.899zmo3k4x.css",
+      "AssetFile": "C:\\Users\\Valentin Waultier\\Desktop\\Cours\\Bachelor\\Projet Individuel CESIZen\\CESIZen\\CESIZen\\wwwroot\\css\\site.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1271"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ZIDhAM48ccm4YKI7xcj+s0aZQe/S9cXe/7F9YIRBxRI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 27 Apr 2025 20:09:16 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "899zmo3k4x"
+        },
+        {
+          "Name": "label",
+          "Value": "css/site.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-ZIDhAM48ccm4YKI7xcj+s0aZQe/S9cXe/7F9YIRBxRI="
+        }
+      ]
+    },
+    {
       "Route": "css/site.css",
       "AssetFile": "C:\\Users\\Valentin Waultier\\Desktop\\Cours\\Bachelor\\Projet Individuel CESIZen\\CESIZen\\CESIZen\\wwwroot\\css\\site.css",
       "Selectors": [],
@@ -2776,7 +2821,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1190"
+          "Value": "1271"
         },
         {
           "Name": "Content-Type",
@@ -2784,11 +2829,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"NppdwY7U+PrfLqwaBId6c9GAMX+/vsY2FPpXAT+FWzY=\""
+          "Value": "\"ZIDhAM48ccm4YKI7xcj+s0aZQe/S9cXe/7F9YIRBxRI=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 19 Apr 2025 14:58:04 GMT"
+          "Value": "Sun, 27 Apr 2025 20:09:16 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2798,52 +2843,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-NppdwY7U+PrfLqwaBId6c9GAMX+/vsY2FPpXAT+FWzY="
-        }
-      ]
-    },
-    {
-      "Route": "css/site.y2eevuzpbk.css",
-      "AssetFile": "C:\\Users\\Valentin Waultier\\Desktop\\Cours\\Bachelor\\Projet Individuel CESIZen\\CESIZen\\CESIZen\\wwwroot\\css\\site.css",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "1190"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"NppdwY7U+PrfLqwaBId6c9GAMX+/vsY2FPpXAT+FWzY=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sat, 19 Apr 2025 14:58:04 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "y2eevuzpbk"
-        },
-        {
-          "Name": "label",
-          "Value": "css/site.css"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-NppdwY7U+PrfLqwaBId6c9GAMX+/vsY2FPpXAT+FWzY="
+          "Value": "sha256-ZIDhAM48ccm4YKI7xcj+s0aZQe/S9cXe/7F9YIRBxRI="
         }
       ]
     },

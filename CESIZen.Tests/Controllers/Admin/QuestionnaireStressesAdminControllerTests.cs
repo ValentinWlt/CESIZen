@@ -15,15 +15,19 @@ namespace CESIZen.Tests.Controllers.Admin
         {
             // Arrange
             var options = new DbContextOptionsBuilder<CesiZenDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDb")
+                .UseInMemoryDatabase(databaseName: "Index_Test_Database")
                 .Options;
 
             using (var context = new CesiZenDbContext(options))
             {
+                context.Questionnaires.RemoveRange(context.Questionnaires);
+                context.SaveChanges();
+
                 context.Questionnaires.Add(new QuestionnaireStress { Id = 1, Valeur = 10, Libelle = "Stress test" });
                 context.SaveChanges();
 
-                var controller = new QuestionnaireStressesController(context);
+                // Vérifier que vous utilisez le bon contrôleur ici
+                var controller = new QuestionnaireStressesAdminController(context);
 
                 // Act
                 var result = await controller.Index();
