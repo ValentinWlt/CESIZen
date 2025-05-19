@@ -30,7 +30,7 @@ namespace CESIZen.Tests.Controllers.Admin
         [TestMethod]
         public async Task Index_Returns_ViewResult_With_Informations()
         {
-            // Arrange
+            
             _context.Informations.Add(new Information
             {
                 Titre = "Titre test",
@@ -40,10 +40,10 @@ namespace CESIZen.Tests.Controllers.Admin
             });
             await _context.SaveChangesAsync();
 
-            // Act
+            
             var result = await _controller.Index();
 
-            // Assert
+            
             Assert.IsInstanceOfType(result, typeof(ViewResult));
             var viewResult = result as ViewResult;
             Assert.IsNotNull(viewResult);
@@ -54,7 +54,7 @@ namespace CESIZen.Tests.Controllers.Admin
         [TestMethod]
         public async Task Details_ValidId_ReturnsViewWithModel()
         {
-            // Arrange
+            
             var options = new DbContextOptionsBuilder<CesiZenDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
@@ -72,10 +72,10 @@ namespace CESIZen.Tests.Controllers.Admin
             context.Informations.Add(info);
             await context.SaveChangesAsync();
 
-            // Act
+            
             var result = await controller.Details(1);
 
-            // Assert
+            
             Assert.IsInstanceOfType(result, typeof(ViewResult));
             var viewResult = result as ViewResult;
             Assert.IsNotNull(viewResult);
@@ -86,7 +86,7 @@ namespace CESIZen.Tests.Controllers.Admin
         [TestMethod]
         public void Create_Get_ReturnsView()
         {
-            // Arrange
+            
             var options = new DbContextOptionsBuilder<CesiZenDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
@@ -94,17 +94,17 @@ namespace CESIZen.Tests.Controllers.Admin
             using var context = new CesiZenDbContext(options);
             var controller = new InformationAdminController(context);
 
-            // Act
+            
             var result = controller.Create();
 
-            // Assert
+            
             Assert.IsInstanceOfType(result, typeof(ViewResult));
         }
 
         [TestMethod]
         public async Task Create_Post_ValidModel_RedirectsToIndex()
         {
-            // Arrange
+            
             var options = new DbContextOptionsBuilder<CesiZenDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
@@ -123,10 +123,10 @@ namespace CESIZen.Tests.Controllers.Admin
                 OrdreAffichage = 1
             };
 
-            // Act
+            
             var result = await controller.Create(info);
 
-            // Assert
+            
             Assert.IsInstanceOfType(result, typeof(RedirectToActionResult));
             var redirect = result as RedirectToActionResult;
             Assert.AreEqual("Index", redirect.ActionName);
@@ -137,7 +137,7 @@ namespace CESIZen.Tests.Controllers.Admin
 
         public async Task Edit_Get_ValidId_ReturnsViewResultWithInformation()
         {
-            // Arrange
+            
             var options = new DbContextOptionsBuilder<CesiZenDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
@@ -156,10 +156,10 @@ namespace CESIZen.Tests.Controllers.Admin
 
                 var controller = new InformationAdminController(context);
 
-                // Act
+                
                 var result = await controller.Edit(1);
 
-                // Assert
+                
                 Assert.IsInstanceOfType(result, typeof(ViewResult));
                 var viewResult = result as ViewResult;
                 Assert.IsNotNull(viewResult);
@@ -172,7 +172,7 @@ namespace CESIZen.Tests.Controllers.Admin
         [TestMethod]
         public async Task Edit_Post_ValidModel_UpdatesEntityAndRedirects()
         {
-            // Arrange
+            
             var options = new DbContextOptionsBuilder<CesiZenDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
@@ -209,10 +209,10 @@ namespace CESIZen.Tests.Controllers.Admin
                     DateCreation = DateTime.Now
                 };
 
-                // Act
+                
                 var result = await controller.Edit(1, updatedInfo);
 
-                // Assert
+                
                 Assert.IsInstanceOfType(result, typeof(RedirectToActionResult));
                 var redirect = result as RedirectToActionResult;
                 Assert.AreEqual("Index", redirect.ActionName);
@@ -232,7 +232,7 @@ namespace CESIZen.Tests.Controllers.Admin
         [TestMethod]
         public async Task Delete_Get_ValidId_ReturnsViewResultWithInformation()
         {
-            // Arrange
+            
             var options = new DbContextOptionsBuilder<CesiZenDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
@@ -251,10 +251,10 @@ namespace CESIZen.Tests.Controllers.Admin
 
                 var controller = new InformationAdminController(context);
 
-                // Act
+                
                 var result = await controller.Delete(1);
 
-                // Assert
+                
                 Assert.IsInstanceOfType(result, typeof(ViewResult));
                 var viewResult = result as ViewResult;
                 Assert.IsNotNull(viewResult);
@@ -267,7 +267,7 @@ namespace CESIZen.Tests.Controllers.Admin
         [TestMethod]
         public async Task DeleteConfirmed_RemovesEntityAndRedirects()
         {
-            // Arrange
+            
             var options = new DbContextOptionsBuilder<CesiZenDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
@@ -290,10 +290,10 @@ namespace CESIZen.Tests.Controllers.Admin
                 var controller = new InformationAdminController(context);
                 controller.TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
 
-                // Act
+                
                 var result = await controller.DeleteConfirmed(1);
 
-                // Assert
+                
                 Assert.IsInstanceOfType(result, typeof(RedirectToActionResult));
                 var redirect = result as RedirectToActionResult;
                 Assert.AreEqual("Index", redirect.ActionName);

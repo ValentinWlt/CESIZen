@@ -15,35 +15,35 @@ namespace CESIZen.Tests.Controllers
         [TestMethod]
         public void Index_ReturnsViewResult()
         {
-            // Arrange
+            
             var mockLogger = new Mock<ILogger<HomeController>>();
             var controller = new HomeController(mockLogger.Object);
 
-            // Act
+            
             var result = controller.Index();
 
-            // Assert
+            
             Assert.IsInstanceOfType(result, typeof(ViewResult));
         }
 
         [TestMethod]
         public void Privacy_ReturnsViewResult()
         {
-            // Arrange
+            
             var mockLogger = new Mock<ILogger<HomeController>>();
             var controller = new HomeController(mockLogger.Object);
 
-            // Act
+            
             var result = controller.Privacy();
 
-            // Assert
+            
             Assert.IsInstanceOfType(result, typeof(ViewResult));
         }
 
         [TestMethod]
         public void Error_ReturnsViewWithErrorViewModel()
         {
-            // Arrange
+            
             var mockLogger = new Mock<ILogger<HomeController>>();
             var controller = new HomeController(mockLogger.Object);
 
@@ -54,10 +54,10 @@ namespace CESIZen.Tests.Controllers
                 HttpContext = httpContext
             };
 
-            // Act
+            
             var result = controller.Error() as ViewResult;
 
-            // Assert
+            
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result.Model, typeof(ErrorViewModel));
 

@@ -65,7 +65,7 @@ namespace CESIZen.Tests.Controllers.Admin
         [TestMethod]
         public async Task UsersList_ReturnsViewWithUsersAndRoles()
         {
-            // Arrange
+            
             var users = new List<Utilisateur>
     {
         new Utilisateur { Id = 1, Nom = "Test1", Prenom = "User1", Email = "test1@example.com" },
@@ -87,10 +87,10 @@ namespace CESIZen.Tests.Controllers.Admin
 
             var controller = new UserAdminController(mockUserManager.Object, mockRoleManager.Object);
 
-            // Act
+            
             var result = await controller.UsersList();
 
-            // Assert
+            
             Assert.IsInstanceOfType(result, typeof(ViewResult));
             var viewResult = result as ViewResult;
             Assert.IsNotNull(viewResult);
@@ -102,7 +102,7 @@ namespace CESIZen.Tests.Controllers.Admin
         [TestMethod]
         public async Task Details_UserExists_ReturnsViewWithUserAndRoles()
         {
-            // Arrange
+            
             var user = new Utilisateur { Id = 1, Nom = "Test", Prenom = "User", Email = "test@example.com" };
 
             var mockUserManager = GetMockUserManager();
@@ -114,10 +114,10 @@ namespace CESIZen.Tests.Controllers.Admin
 
             var controller = new UserAdminController(mockUserManager.Object, mockRoleManager.Object);
 
-            // Act
+            
             var result = await controller.Details(1);
 
-            // Assert
+            
             Assert.IsInstanceOfType(result, typeof(ViewResult));
             var viewResult = result as ViewResult;
             Assert.IsNotNull(viewResult.Model);
@@ -127,7 +127,7 @@ namespace CESIZen.Tests.Controllers.Admin
         [TestMethod]
         public void Create_Get_ReturnsViewWithRoles()
         {
-            // Arrange
+            
             var mockUserManager = GetMockUserManager();
 
             var roles = new List<IdentityRole<int>>
@@ -144,10 +144,10 @@ namespace CESIZen.Tests.Controllers.Admin
 
             var controller = new UserAdminController(mockUserManager.Object, mockRoleManager.Object);
 
-            // Act
+            
             var result = controller.Create();
 
-            // Assert
+            
             Assert.IsInstanceOfType(result, typeof(ViewResult));
             var viewResult = result as ViewResult;
             Assert.IsNotNull(viewResult);
@@ -160,7 +160,7 @@ namespace CESIZen.Tests.Controllers.Admin
         [TestMethod]
         public async Task Create_Post_ValidModel_CreatesUserAndRedirects()
         {
-            // Arrange
+            
             var mockUserManager = GetMockUserManager();
             var mockRoleManager = new Mock<RoleManager<IdentityRole<int>>>(
                 Mock.Of<IRoleStore<IdentityRole<int>>>(), null, null, null, null);
@@ -183,10 +183,10 @@ namespace CESIZen.Tests.Controllers.Admin
 
             var controller = new UserAdminController(mockUserManager.Object, mockRoleManager.Object);
 
-            // Act
+            
             var result = await controller.Create(utilisateur, "Password123", "Admin");
 
-            // Assert
+            
             Assert.IsInstanceOfType(result, typeof(RedirectToActionResult));
             var redirectResult = result as RedirectToActionResult;
             Assert.AreEqual("UsersList", redirectResult.ActionName);
@@ -195,7 +195,7 @@ namespace CESIZen.Tests.Controllers.Admin
         [TestMethod]
         public async Task Edit_Get_ReturnsViewWithUserAndRoles()
         {
-            // Arrange
+            
             var utilisateur = new Utilisateur
             {
                 Id = 1,
@@ -222,10 +222,10 @@ namespace CESIZen.Tests.Controllers.Admin
 
             var controller = new UserAdminController(mockUserManager.Object, mockRoleManager.Object);
 
-            // Act
+            
             var result = await controller.Edit(1);
 
-            // Assert
+            
             Assert.IsInstanceOfType(result, typeof(ViewResult));
             var viewResult = result as ViewResult;
             Assert.IsNotNull(viewResult);
@@ -239,7 +239,7 @@ namespace CESIZen.Tests.Controllers.Admin
         [TestMethod]
         public async Task Edit_Post_ValidUser_UpdatesSuccessfully()
         {
-            // Arrange
+            
             var utilisateur = new Utilisateur
             {
                 Id = 1,
@@ -283,10 +283,10 @@ namespace CESIZen.Tests.Controllers.Admin
                 Statut = "Actif"
             };
 
-            // Act 
+             
             var result = await controller.Edit(1, utilisateurModifie, selectedRole: null);
 
-            // Assert
+            
             Assert.IsInstanceOfType(result, typeof(RedirectToActionResult));
             var redirectResult = result as RedirectToActionResult;
             Assert.AreEqual("UsersList", redirectResult.ActionName);
@@ -297,7 +297,7 @@ namespace CESIZen.Tests.Controllers.Admin
         [TestMethod]
         public async Task Delete_Get_ValidId_ReturnsViewWithUserAndRoles()
         {
-            // Arrange
+            
             var utilisateur = new Utilisateur
             {
                 Id = 1,
@@ -312,10 +312,10 @@ namespace CESIZen.Tests.Controllers.Admin
 
             var controller = new UserAdminController(mockUserManager.Object, GetMockRoleManager().Object);
 
-            // Act
+            
             var result = await controller.Delete(1);
 
-            // Assert
+            
             var viewResult = result as ViewResult;
             Assert.IsNotNull(viewResult);
             Assert.IsInstanceOfType(viewResult, typeof(ViewResult));
@@ -326,7 +326,7 @@ namespace CESIZen.Tests.Controllers.Admin
         [TestMethod]
         public async Task DeleteConfirmed_ValidId_DeletesUserAndRedirects()
         {
-            // Arrange
+            
             var utilisateur = new Utilisateur
             {
                 Id = 1,
@@ -348,10 +348,10 @@ namespace CESIZen.Tests.Controllers.Admin
                 Mock.Of<ITempDataProvider>()
             );
 
-            // Act
+            
             var result = await controller.DeleteConfirmed(1);
 
-            // Assert
+            
             Assert.IsInstanceOfType(result, typeof(RedirectToActionResult));
             var redirect = result as RedirectToActionResult;
             Assert.AreEqual("UsersList", redirect.ActionName);

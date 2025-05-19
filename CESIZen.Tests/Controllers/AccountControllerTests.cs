@@ -41,14 +41,11 @@ namespace CESIZen.Tests.Controllers
         [TestMethod]
         public void Login_Get_ReturnsViewWithReturnUrl()
         {
-            // Arrange
             var controller = new AccountController(null, null, null);
             var returnUrl = "/Home/Index";
 
-            // Act
             var result = controller.Login(returnUrl) as ViewResult;
 
-            // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(returnUrl, controller.ViewData["ReturnUrl"]);
         }
@@ -56,7 +53,6 @@ namespace CESIZen.Tests.Controllers
         [TestMethod]
         public async Task Login_Post_ValidCredentials_RedirectsToLocal()
         {
-            // Arrange
             var mockSignInManager = TestHelpers.GetMockSignInManager();
             mockSignInManager.Setup(s => s.PasswordSignInAsync(
                 It.IsAny<string>(),
@@ -81,10 +77,8 @@ namespace CESIZen.Tests.Controllers
 
             var returnUrl = "/Home/Index";
 
-            // Act
             var result = await controller.Login(model, returnUrl);
 
-            // Assert
             var redirectResult = result as RedirectResult;
             Assert.IsNotNull(redirectResult);
             Assert.AreEqual(returnUrl, redirectResult.Url);
@@ -93,14 +87,11 @@ namespace CESIZen.Tests.Controllers
         [TestMethod]
         public void Register_Get_ReturnsViewWithReturnUrl()
         {
-            // Arrange
             var controller = new AccountController(null, null, null);
             var returnUrl = "/home/index";
 
-            // Act
             var result = controller.Register(returnUrl) as ViewResult;
 
-            // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(returnUrl, controller.ViewData["ReturnUrl"]);
         }
@@ -108,7 +99,6 @@ namespace CESIZen.Tests.Controllers
         [TestMethod]
         public async Task Register_Post_ValidModel_CreatesUserAndRedirects()
         {
-            // Arrange
             var mockUserManager = TestHelpers.GetMockUserManager();
             var mockSignInManager = TestHelpers.GetMockSignInManager();
             var mockRoleManager = GetMockRoleManager();
@@ -143,10 +133,8 @@ namespace CESIZen.Tests.Controllers
             mockUrlHelper.Setup(u => u.IsLocalUrl(returnUrl)).Returns(true);
             controller.Url = mockUrlHelper.Object;
 
-            // Act
             var result = await controller.Register(registerViewModel, returnUrl);
 
-            // Assert
             var redirect = result as RedirectResult;
             Assert.IsNotNull(redirect);
             Assert.AreEqual(returnUrl, redirect.Url);
@@ -155,7 +143,6 @@ namespace CESIZen.Tests.Controllers
         [TestMethod]
         public async Task Logout_CallsSignOutAndRedirectsToHomeIndex()
         {
-            // Arrange
             var mockSignInManager = TestHelpers.GetMockSignInManager();
             mockSignInManager
                 .Setup(s => s.SignOutAsync())
@@ -164,10 +151,8 @@ namespace CESIZen.Tests.Controllers
 
             var controller = new AccountController(null, mockSignInManager.Object, null);
 
-            // Act
             var result = await controller.Logout();
 
-            // Assert
             var redirectResult = result as RedirectToActionResult;
             Assert.IsNotNull(redirectResult);
             Assert.AreEqual("Index", redirectResult.ActionName);
@@ -179,7 +164,6 @@ namespace CESIZen.Tests.Controllers
         [TestMethod]
         public async Task Manage_Get_UserExists_ReturnsViewWithModel()
         {
-            // Arrange
             var utilisateur = new Utilisateur
             {
                 Nom = "Doe",
@@ -194,10 +178,8 @@ namespace CESIZen.Tests.Controllers
 
             var controller = new AccountController(mockUserManager.Object, null, null);
 
-            // Act
             var result = await controller.Manage();
 
-            // Assert
             var viewResult = result as ViewResult;
             Assert.IsNotNull(viewResult);
             var model = viewResult.Model as ManageAccountViewModel;
@@ -209,7 +191,6 @@ namespace CESIZen.Tests.Controllers
         [TestMethod]
         public async Task Manage_Post_ValidModel_UpdatesUserAndRedirects()
         {
-            // Arrange
             var utilisateur = new Utilisateur
             {
                 Id = 1,
@@ -233,10 +214,10 @@ namespace CESIZen.Tests.Controllers
                 PhoneNumber = "0123456789"
             };
 
-            // Act
+            
             var result = await controller.Manage(model);
 
-            // Assert
+            
             var redirect = result as RedirectToActionResult;
             Assert.IsNotNull(redirect);
             Assert.AreEqual("Index", redirect.ActionName);
@@ -248,20 +229,20 @@ namespace CESIZen.Tests.Controllers
         [TestMethod]
         public void ChangePassword_Get_ReturnsView()
         {
-            // Arrange
+            
             var controller = new AccountController(null, null, null);
 
-            // Act
+            
             var result = controller.ChangePassword();
 
-            // Assert
+            
             Assert.IsInstanceOfType(result, typeof(ViewResult));
         }
 
         [TestMethod]
         public async Task ChangePassword_Post_ValidModel_ChangesPasswordAndRedirects()
         {
-            // Arrange
+            
             var utilisateur = new Utilisateur { Email = "test@example.com" };
 
             var mockUserManager = TestHelpers.GetMockUserManager();
@@ -277,7 +258,7 @@ namespace CESIZen.Tests.Controllers
                              .Returns(Task.CompletedTask);
 
             var controller = new AccountController(mockUserManager.Object, mockSignInManager.Object, null);
-            controller.ModelState.Clear(); // Simule un modèle valide
+            controller.ModelState.Clear(); 
 
             var model = new ChangePasswordViewModel
             {
@@ -286,10 +267,10 @@ namespace CESIZen.Tests.Controllers
                 ConfirmPassword = "New123!"
             };
 
-            // Act
+            
             var result = await controller.ChangePassword(model);
 
-            // Assert
+            
             var redirect = result as RedirectToActionResult;
             Assert.IsNotNull(redirect);
             Assert.AreEqual("Index", redirect.ActionName);

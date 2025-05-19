@@ -30,17 +30,17 @@ namespace CESIZen.Tests.Controllers
         [TestMethod]
         public async Task Submit_ReturnsFormulaireView_WhenNoEventsSelected()
         {
-            // Arrange
+            
             var controller = new ReponseQuestionnairesController(_context);
             controller.ControllerContext = new ControllerContext()
             {
                 HttpContext = new DefaultHttpContext()
             };
 
-            // Act
+            
             var result = await controller.Submit(new List<int>()) as ViewResult;
 
-            // Assert
+            
             Assert.IsNotNull(result);
             Assert.AreEqual("Formulaire", result.ViewName);
             Assert.IsFalse(controller.ModelState.IsValid);
@@ -73,10 +73,10 @@ namespace CESIZen.Tests.Controllers
 
             _controller.TempData = tempData;
 
-            // Act
+            
             var result = await _controller.Submit(evenementsSelectionnes);
 
-            // Assert
+            
             Assert.IsInstanceOfType(result, typeof(RedirectToActionResult));
             var redirectResult = result as RedirectToActionResult;
             Assert.AreEqual("Resultat", redirectResult.ActionName);
@@ -88,14 +88,14 @@ namespace CESIZen.Tests.Controllers
         [TestMethod]
         public async Task Formulaire_ReturnsViewWithQuestionnaires()
         {
-            // Arrange
+            
             _context.Questionnaires.Add(new QuestionnaireStress { Id = 1, Libelle = "Test Q", Valeur = 50 });
             await _context.SaveChangesAsync();
 
-            // Act
+            
             var result = await _controller.Formulaire() as ViewResult;
 
-            // Assert
+            
             Assert.IsNotNull(result);
             var model = result.Model as List<QuestionnaireStress>;
             Assert.IsNotNull(model);
@@ -106,7 +106,7 @@ namespace CESIZen.Tests.Controllers
         [TestMethod]
         public void Resultat_ReturnsViewWithTempData()
         {
-            // Arrange
+            
             var httpContext = new DefaultHttpContext();
             var tempData = new TempDataDictionary(httpContext, Mock.Of<ITempDataProvider>())
             {
@@ -117,10 +117,10 @@ namespace CESIZen.Tests.Controllers
             _controller.ControllerContext = new ControllerContext { HttpContext = httpContext };
             _controller.TempData = tempData;
 
-            // Act
+            
             var result = _controller.Resultat() as ViewResult;
 
-            // Assert
+            
             Assert.IsNotNull(result);
             Assert.AreEqual(250, _controller.ViewBag.Score);
             Assert.AreEqual("Prenez soin de vous.", _controller.ViewBag.Message);

@@ -19,7 +19,7 @@ namespace CESIZen.Tests.Controllers
         public void Setup()
         {
             var options = new DbContextOptionsBuilder<CesiZenDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Base unique à chaque test
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) 
                 .Options;
 
             _context = new CesiZenDbContext(options);
@@ -38,14 +38,14 @@ namespace CESIZen.Tests.Controllers
         [TestMethod]
         public async Task Index_ReturnsOnlyPublishedOrderedInformations()
         {
-            // Arrange
+            
             var controller = new InformationController(_context);
 
-            // Act
+            
             var result = await controller.Index() as ViewResult;
             var model = result.Model as List<Information>;
 
-            // Assert
+            
             Assert.IsNotNull(result);
             Assert.IsNotNull(model);
             Assert.AreEqual(2, model.Count);
@@ -56,14 +56,14 @@ namespace CESIZen.Tests.Controllers
         [TestMethod]
         public async Task Details_ValidId_ReturnsInformation()
         {
-            // Arrange
+            
             var controller = new InformationController(_context);
 
-            // Act
+            
             var result = await controller.Details(1) as ViewResult;
             var model = result.Model as Information;
 
-            // Assert
+            
             Assert.IsNotNull(result);
             Assert.IsNotNull(model);
             Assert.AreEqual("Info 1", model.Titre);
@@ -72,26 +72,26 @@ namespace CESIZen.Tests.Controllers
         [TestMethod]
         public async Task Details_NullId_ReturnsNotFound()
         {
-            // Arrange
+            
             var controller = new InformationController(_context);
 
-            // Act
+            
             var result = await controller.Details(null);
 
-            // Assert
+            
             Assert.IsInstanceOfType(result, typeof(NotFoundResult));
         }
 
         [TestMethod]
         public async Task Details_NonExistentId_ReturnsNotFound()
         {
-            // Arrange
+            
             var controller = new InformationController(_context);
 
-            // Act
+            
             var result = await controller.Details(999);
 
-            // Assert
+            
             Assert.IsInstanceOfType(result, typeof(NotFoundResult));
         }
     }

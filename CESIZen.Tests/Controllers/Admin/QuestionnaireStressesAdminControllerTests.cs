@@ -13,7 +13,7 @@ namespace CESIZen.Tests.Controllers.Admin
         [TestMethod]
         public async Task Index_Returns_ViewResult_WithQuestionnaires()
         {
-            // Arrange
+            
             var options = new DbContextOptionsBuilder<CesiZenDbContext>()
                 .UseInMemoryDatabase(databaseName: "Index_Test_Database")
                 .Options;
@@ -29,10 +29,10 @@ namespace CESIZen.Tests.Controllers.Admin
                 // Vérifier que vous utilisez le bon contrôleur ici
                 var controller = new QuestionnaireStressesAdminController(context);
 
-                // Act
+                
                 var result = await controller.Index();
 
-                // Assert
+                
                 var viewResult = result as ViewResult;
                 Assert.IsNotNull(viewResult, "La vue retournée est nulle");
                 var model = viewResult.Model as IEnumerable<QuestionnaireStress>;
@@ -84,11 +84,11 @@ namespace CESIZen.Tests.Controllers.Admin
 
                 var controller = new QuestionnaireStressesAdminController(context);
 
-                // Act
+                
                 var updated = new QuestionnaireStress { Id = 1, Libelle = "Après", Valeur = 10 };
                 var result = await controller.Edit(1, updated);
 
-                // Assert
+                
                 var redirectResult = result as RedirectToActionResult;
                 Assert.IsNotNull(redirectResult);
                 Assert.AreEqual("Index", redirectResult.ActionName);
@@ -108,7 +108,7 @@ namespace CESIZen.Tests.Controllers.Admin
 
             using (var context = new CesiZenDbContext(options))
             {
-                // Arrange
+                
                 var questionnaire = new QuestionnaireStress
                 {
                     Id = 1,
@@ -120,10 +120,10 @@ namespace CESIZen.Tests.Controllers.Admin
 
                 var controller = new QuestionnaireStressesAdminController(context);
 
-                // Act
+                
                 var result = await controller.Delete(1);
 
-                // Assert
+                
                 var viewResult = result as ViewResult;
                 Assert.IsNotNull(viewResult);
 
@@ -143,17 +143,17 @@ namespace CESIZen.Tests.Controllers.Admin
 
             using (var context = new CesiZenDbContext(options))
             {
-                // Arrange
+                
                 var questionnaire = new QuestionnaireStress { Id = 1, Libelle = "À supprimer", Valeur = 999 };
                 context.Questionnaires.Add(questionnaire);
                 context.SaveChanges();
 
                 var controller = new QuestionnaireStressesAdminController(context);
 
-                // Act
+                
                 var result = await controller.DeleteConfirmed(1);
 
-                // Assert
+                
                 var redirectResult = result as RedirectToActionResult;
                 Assert.IsNotNull(redirectResult);
                 Assert.AreEqual("Index", redirectResult.ActionName);
@@ -172,17 +172,17 @@ namespace CESIZen.Tests.Controllers.Admin
 
             using (var context = new CesiZenDbContext(options))
             {
-                // Arrange
+                
                 var questionnaire = new QuestionnaireStress { Id = 1, Libelle = "Stress test", Valeur = 20 };
                 context.Questionnaires.Add(questionnaire);
                 context.SaveChanges();
 
                 var controller = new QuestionnaireStressesAdminController(context);
 
-                // Act
+                
                 var result = await controller.Details(1);
 
-                // Assert
+                
                 var viewResult = result as ViewResult;
                 Assert.IsNotNull(viewResult);
 
@@ -204,10 +204,10 @@ namespace CESIZen.Tests.Controllers.Admin
             {
                 var controller = new QuestionnaireStressesAdminController(context);
 
-                // Act
+                
                 var result = controller.Create();
 
-                // Assert
+                
                 var viewResult = result as ViewResult;
                 Assert.IsNotNull(viewResult);
             }
@@ -231,10 +231,10 @@ namespace CESIZen.Tests.Controllers.Admin
                     Valeur = 42
                 };
 
-                // Act
+                
                 var result = await controller.Create(newItem);
 
-                // Assert
+                
                 var redirectResult = result as RedirectToActionResult;
                 Assert.IsNotNull(redirectResult);
                 Assert.AreEqual("Index", redirectResult.ActionName);

@@ -26,10 +26,10 @@ namespace CESIZen.Tests.Controllers
 
                 var controller = new QuestionnaireStressesController(context);
 
-                // Act
+                
                 var result = await controller.Index();
 
-                // Assert
+                
                 var viewResult = result as ViewResult;
                 Assert.IsNotNull(viewResult, "La vue retournée est nulle");
                 var model = viewResult.Model as IEnumerable<QuestionnaireStress>;

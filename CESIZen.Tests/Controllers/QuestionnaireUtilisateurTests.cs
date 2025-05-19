@@ -14,7 +14,7 @@ public class QuestionnaireUtilisateurTests
     public void Setup()
     {
         var options = new DbContextOptionsBuilder<CesiZenDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Base unique pour chaque test
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) 
             .Options;
 
         _context = new CesiZenDbContext(options);
@@ -31,13 +31,13 @@ public class QuestionnaireUtilisateurTests
     [TestMethod]
     public async Task Index_ReturnsViewWithQuestionnaires()
     {
-        // Arrange
+        
         var controller = new QuestionnaireUtilisateurController(_context);
 
-        // Act
+        
         var result = await controller.Index();
 
-        // Assert
+        
         var viewResult = result as ViewResult;
         Assert.IsNotNull(viewResult);
 
@@ -51,13 +51,13 @@ public class QuestionnaireUtilisateurTests
     [TestMethod]
     public void Merci_ReturnsView()
     {
-        // Arrange
+        
         var controller = new QuestionnaireUtilisateurController(_context);
 
-        // Act
+        
         var result = controller.Merci();
 
-        // Assert
+        
         var viewResult = result as ViewResult;
         Assert.IsNotNull(viewResult);
     }
@@ -65,7 +65,7 @@ public class QuestionnaireUtilisateurTests
     [TestMethod]
     public async Task Soumettre_ValidEvenementIds_SavesReponseAndRedirects()
     {
-        // Arrange
+        
         var userId = 42;
 
         if (!_context.Questionnaires.Any(q => q.Id == 1))
@@ -88,10 +88,10 @@ public class QuestionnaireUtilisateurTests
 
         var evenementIds = new List<int> { 1 };
 
-        // Act
+        
         var result = await controller.Soumettre(evenementIds);
 
-        // Assert
+        
         var redirectResult = result as RedirectToActionResult;
         Assert.IsNotNull(redirectResult);
         Assert.AreEqual("Merci", redirectResult.ActionName);
