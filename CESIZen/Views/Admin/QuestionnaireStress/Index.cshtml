@@ -1,20 +1,20 @@
 ﻿@model IEnumerable<CESIZen.Models.QuestionnaireStress>
 
 @{
-    ViewData["Title"] = "Gestion du questionnaire";
+    ViewData["Title"] = "Gestion du questionnaire de stress";
 }
 
-<h1>Index</h1>
+<h1>Événements par points de stress</h1>
 
 <p>
-    <a asp-controller="QuestionnaireStressesAdmin" asp-action="Create" class="btn btn-primary">Create New</a>
+    <a asp-controller="QuestionnaireStressesAdmin" asp-action="Create" class="btn btn-primary">Ajouter un événement</a>
 </p>
 <div class="table-responsive">
     <table class="table table-striped table-hover">
         <thead class="thead-dark">
             <tr>
-                <th>@Html.DisplayNameFor(model => model.First().Libelle)</th>
-                <th>@Html.DisplayNameFor(model => model.First().Valeur)</th>
+                <th>@Html.DisplayNameFor(model => model.Libelle)</th>
+                <th>@Html.DisplayNameFor(model => model.Valeur)</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -36,4 +36,3 @@
         </tbody>
     </table>
 </div>
-

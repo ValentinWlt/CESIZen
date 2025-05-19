@@ -31,7 +31,6 @@ namespace CESIZen.Controllers
 
             int? utilisateurId = null;
 
-            // Vérifie si l'utilisateur est connecté
             if (User.Identity.IsAuthenticated)
             {
                 utilisateurId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
@@ -39,7 +38,7 @@ namespace CESIZen.Controllers
 
             var reponseQuestionnaire = new ReponseQuestionnaire
             {
-                UtilisateurId = utilisateurId, // null si non connecté
+                UtilisateurId = utilisateurId, 
                 DateReponse = DateTime.Now
             };
 

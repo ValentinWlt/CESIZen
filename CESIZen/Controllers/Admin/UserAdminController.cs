@@ -19,7 +19,6 @@ namespace CESIZen.Controllers.Admin
             _roleManager = roleManager;
         }
 
-        // Liste tous les utilisateurs
         public async Task<IActionResult> UsersList()
         {
             var users = await _userManager.Users.ToListAsync();
@@ -63,7 +62,6 @@ namespace CESIZen.Controllers.Admin
         // GET: Admin/Create
         public IActionResult Create()
         {
-            // Récupérer les rôles depuis la base de données 
             var roles = _roleManager.Roles.Select(r => r.Name).ToList();
             ViewBag.AvailableRoles = new SelectList(roles);
 
@@ -77,28 +75,25 @@ namespace CESIZen.Controllers.Admin
         {
             if (ModelState.IsValid)
             {
-                // Assurez-vous que l'Email est correctement assigné
                 utilisateur.UserName = utilisateur.Mail;
                 utilisateur.Email = utilisateur.Mail;
 
                 var result = await _userManager.CreateAsync(utilisateur, Password);
                 if (result.Succeeded)
                 {
-                    // Vérifier que le rôle existe
                     if (!string.IsNullOrEmpty(selectedRole) && await _roleManager.RoleExistsAsync(selectedRole))
                     {
                         await _userManager.AddToRoleAsync(utilisateur, selectedRole);
                     }
                     else
                     {
-                        // Rôle par défaut
                         if (await _roleManager.RoleExistsAsync("User"))
                         {
                             await _userManager.AddToRoleAsync(utilisateur, "User");
                         }
                     }
 
-                    return RedirectToAction(nameof(UsersList)); // Assurez-vous que l'action Index existe
+                    return RedirectToAction(nameof(UsersList)); 
                 }
 
                 foreach (var error in result.Errors)
@@ -107,7 +102,6 @@ namespace CESIZen.Controllers.Admin
                 }
             }
 
-            // En cas d'erreur, recréer la liste des rôles
             var roles = _roleManager.Roles.Select(r => r.Name).ToList();
             ViewBag.AvailableRoles = new SelectList(roles);
 
@@ -125,7 +119,6 @@ namespace CESIZen.Controllers.Admin
                 return NotFound();
             }
 
-            // Récupérer les rôles de l'utilisateur pour l'affichage
             var userRoles = await _userManager.GetRolesAsync(utilisateur);
             ViewBag.UserRoles = userRoles;
 
@@ -230,7 +223,6 @@ namespace CESIZen.Controllers.Admin
                         {
                             ModelState.AddModelError(string.Empty, error.Description);
                         }
-                        // Recharger les rôles pour la vue
                         var roles = await _roleManager.Roles.ToListAsync();
                         ViewBag.AvailableRoles = new SelectList(roles, "Name", "Name");
                         var userRoles = await _userManager.GetRolesAsync(userToUpdate);
@@ -276,7 +268,6 @@ namespace CESIZen.Controllers.Admin
                             await _userManager.RemoveFromRolesAsync(userToUpdate, userRoles);
                         }
 
-                        // Ajouter le nouveau rôle
                         await _userManager.AddToRoleAsync(userToUpdate, selectedRole);
                     }
 

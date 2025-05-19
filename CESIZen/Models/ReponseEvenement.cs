@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace CESIZen.Models
+﻿namespace CESIZen.Models
 {
     public class ReponseEvenement
     {

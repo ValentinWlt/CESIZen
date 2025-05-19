@@ -59,7 +59,6 @@ namespace CESIZen.Controllers.Admin
         {
             if (ModelState.IsValid)
             {
-                // Définir la date de création à maintenant
                 information.DateCreation = DateTime.Now;
 
                 _context.Add(information);
