@@ -37,7 +37,7 @@ services:
       - "7214:8081"  
     depends_on:
       sqlserver:
-        condition: service_healthy  
+        condition: service_healthy
     networks:
       - cesizen-network
     restart: unless-stopped

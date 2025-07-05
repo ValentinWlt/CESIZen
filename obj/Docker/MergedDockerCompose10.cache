@@ -1,0 +1,94 @@
+name: dockercompose10944854202728988959
+services:
+  cesizen:
+    build:
+      context: C:\Users\Valentin Waultier\Desktop\Cours\Bachelor\Projet Individuel CESIZen\CESIZen
+      dockerfile: CESIZen/Dockerfile
+    container_name: cesizen-web
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+        required: true
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+      ASPNETCORE_HTTPS_PORTS: "8081"
+      ConnectionStrings__DefaultConnection: Server=sqlserver;Database=CESIZen;User Id=sa;Password=CesiZen123!;TrustServerCertificate=true;MultipleActiveResultSets=true
+    image: cesizen
+    networks:
+      cesizen-network: null
+    ports:
+      - mode: ingress
+        target: 8080
+        published: "5057"
+        protocol: tcp
+      - mode: ingress
+        target: 8081
+        published: "7214"
+        protocol: tcp
+      - mode: ingress
+        target: 8080
+        protocol: tcp
+      - mode: ingress
+        target: 8081
+        protocol: tcp
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: C:\Users\Valentin Waultier\AppData\Roaming/Microsoft/UserSecrets
+        target: /home/app/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\Valentin Waultier\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\Valentin Waultier\AppData\Roaming/ASP.NET/Https
+        target: /home/app/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\Valentin Waultier\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+  sqlserver:
+    container_name: cesizen-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Express
+      SA_PASSWORD: CesiZen123!
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P CesiZen123! -Q 'SELECT 1'
+      timeout: 10s
+      interval: 30s
+      retries: 5
+      start_period: 1m0s
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    networks:
+      cesizen-network: null
+    ports:
+      - mode: ingress
+        target: 1433
+        published: "1433"
+        protocol: tcp
+    volumes:
+      - type: volume
+        source: sqlserver_data
+        target: /var/opt/mssql
+        volume: {}
+networks:
+  cesizen-network:
+    name: dockercompose10944854202728988959_cesizen-network
+    driver: bridge
+volumes:
+  sqlserver_data:
+    name: dockercompose10944854202728988959_sqlserver_data
