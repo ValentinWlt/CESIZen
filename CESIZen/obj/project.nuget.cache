@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "8mLzy1f1Q/k=",
+  "dgSpecHash": "sfM8mRftsv8=",
   "success": true,
   "projectFilePath": "C:\\Users\\Valentin Waultier\\Desktop\\Cours\\Bachelor\\Projet Individuel CESIZen\\CESIZen\\CESIZen\\CESIZen.csproj",
   "expectedPackageFiles": [
@@ -114,6 +114,7 @@
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\microsoft.netcore.targets\\1.1.0\\microsoft.netcore.targets.1.1.0.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\microsoft.sqlserver.server\\1.0.0\\microsoft.sqlserver.server.1.0.0.nupkg.sha512",
+    "C:\\Users\\Valentin Waultier\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.21.0\\microsoft.visualstudio.azure.containers.tools.targets.1.21.0.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\microsoft.visualstudio.web.codegeneration\\8.0.7\\microsoft.visualstudio.web.codegeneration.8.0.7.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\microsoft.visualstudio.web.codegeneration.core\\8.0.7\\microsoft.visualstudio.web.codegeneration.core.8.0.7.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\microsoft.visualstudio.web.codegeneration.design\\8.0.7\\microsoft.visualstudio.web.codegeneration.design.8.0.7.nupkg.sha512",

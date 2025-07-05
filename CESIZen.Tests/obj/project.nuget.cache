@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "k22x2wmehB0=",
+  "dgSpecHash": "2uWtP4+EKc0=",
   "success": true,
   "projectFilePath": "C:\\Users\\Valentin Waultier\\Desktop\\Cours\\Bachelor\\Projet Individuel CESIZen\\CESIZen\\CESIZen.Tests\\CESIZen.Tests.csproj",
   "expectedPackageFiles": [
@@ -123,6 +123,7 @@
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\microsoft.testing.platform.msbuild\\1.4.3\\microsoft.testing.platform.msbuild.1.4.3.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\microsoft.testplatform.objectmodel\\17.12.0\\microsoft.testplatform.objectmodel.17.12.0.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\microsoft.testplatform.testhost\\17.12.0\\microsoft.testplatform.testhost.17.12.0.nupkg.sha512",
+    "C:\\Users\\Valentin Waultier\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.21.0\\microsoft.visualstudio.azure.containers.tools.targets.1.21.0.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\microsoft.visualstudio.web.codegeneration\\8.0.7\\microsoft.visualstudio.web.codegeneration.8.0.7.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\microsoft.visualstudio.web.codegeneration.core\\8.0.7\\microsoft.visualstudio.web.codegeneration.core.8.0.7.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\microsoft.visualstudio.web.codegeneration.design\\8.0.7\\microsoft.visualstudio.web.codegeneration.design.8.0.7.nupkg.sha512",

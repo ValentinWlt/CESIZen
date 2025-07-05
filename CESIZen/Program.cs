@@ -41,6 +41,15 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docker")
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<CesiZenDbContext>();
+        context.Database.Migrate();
+    }
+}
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
