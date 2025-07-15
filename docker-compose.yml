@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  # Base de données SQL Server
+  cesizen-database:
+    container_name: cesizen_database
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    user: "0:0"
+    environment:
+      SA_PASSWORD: "CesiZen123!SecurePass"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    volumes:
+      - cesizen_sqldata:/var/opt/mssql/data
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'CesiZen123!SecurePass' -Q 'SELECT 1'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - cesizen-network
+    restart: unless-stopped
+
+  # Application CESIZen
+  cesizen-app:
+    container_name: cesizen_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      - ConnectionStrings__DefaultConnection=Server=cesizen-database;Database=CESIZen;User Id=sa;Password=CesiZen123!SecurePass;TrustServerCertificate=true;MultipleActiveResultSets=true;
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      cesizen-database:
+        condition: service_healthy
+    networks:
+      - cesizen-network
+    restart: unless-stopped
+
+volumes:
+  cesizen_sqldata:
+    driver: local
+
+networks:
+  cesizen-network:
+    driver: bridge
