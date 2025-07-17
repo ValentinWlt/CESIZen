@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Base de données SQL Server
   cesizen-database:
@@ -14,12 +12,13 @@ services:
       - "1433:1433"
     volumes:
       - cesizen_sqldata:/var/opt/mssql/data
+    # Healthcheck simplifié - teste juste la connexion SQL Server
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'CesiZen123!SecurePass' -Q 'SELECT 1'"]
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'CesiZen123!SecurePass' -Q 'SELECT 1' || exit 1"]
       interval: 30s
       timeout: 10s
-      retries: 5
-      start_period: 60s
+      retries: 10
+      start_period: 90s
     networks:
       - cesizen-network
     restart: unless-stopped
@@ -33,11 +32,11 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_HTTP_PORTS=8080
-      - ASPNETCORE_HTTPS_PORTS=8081
+      # SUPPRESSION COMPLETE DE HTTPS
+      - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Server=cesizen-database;Database=CESIZen;User Id=sa;Password=CesiZen123!SecurePass;TrustServerCertificate=true;MultipleActiveResultSets=true;
     ports:
       - "8080:8080"
-      - "8081:8081"
     depends_on:
       cesizen-database:
         condition: service_healthy
