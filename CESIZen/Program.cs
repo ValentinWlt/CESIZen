@@ -35,6 +35,32 @@ builder.Services.ConfigureApplicationCookie(options => {
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<CesiZenDbContext>(); 
+
+        await context.Database.EnsureCreatedAsync();
+
+        // OU appliquer les migrations automatiquement
+        // await context.Database.MigrateAsync();
+
+        // Log de succès
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogInformation("Base de données initialisée avec succès");
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Une erreur s'est produite lors de l'initialisation de la base de données");
+
+        // En production, vous pourriez vouloir relancer l'exception
+        // throw;
+    }
+}
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
