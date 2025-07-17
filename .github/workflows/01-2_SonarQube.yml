@@ -41,22 +41,42 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
+          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
         run: |
-          # Vérifier que le token existe
+          # Vérifier que les tokens existent
           if [ -z "$SONAR_TOKEN" ]; then
             echo "❌ SONAR_TOKEN is not set!"
+            echo "ℹ️ Please configure SonarCloud following these steps:"
+            echo "1. Go to https://sonarcloud.io"
+            echo "2. Login with GitHub"
+            echo "3. Create a new project for your repository"
+            echo "4. Go to My Account > Security > Generate Token"
+            echo "5. Add the token as SONAR_TOKEN in GitHub secrets"
+            echo "6. Add your organization key as SONAR_ORGANIZATION"
+            echo "7. Add your project key as SONAR_PROJECT_KEY"
             exit 1
           fi
           
+          # Configuration avec les valeurs exactes de votre SonarCloud
+          ORGANIZATION="${SONAR_ORGANIZATION:-valentinwlt}"
+          PROJECT_KEY="${SONAR_PROJECT_KEY:-ValentinWlt_CESIZen}"
+          
+          echo "🔍 SonarCloud Configuration:"
+          echo "- Organization: $ORGANIZATION"
+          echo "- Project Key: $PROJECT_KEY"
+          echo "- Host: https://sonarcloud.io"
+          
           # Configuration adaptée au projet CESIZen
           dotnet sonarscanner begin \
-            /k:"${{ github.repository_owner }}_CESIZen" \
-            /o:"${{ github.repository_owner }}" \
+            /k:"$PROJECT_KEY" \
+            /o:"$ORGANIZATION" \
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
             /d:sonar.cs.opencover.reportsPaths="coverage/**/coverage.opencover.xml" \
             /d:sonar.exclusions="**/bin/**,**/obj/**,**/*.js,**/*.css,**/wwwroot/lib/**" \
-            /d:sonar.coverage.exclusions="**/Program.cs,**/Startup.cs,**/Migrations/**,**/Tests/**"
+            /d:sonar.coverage.exclusions="**/Program.cs,**/Startup.cs,**/Migrations/**,**/Tests/**" \
+            /d:sonar.scanner.skipJreProvisioning=false
           
           dotnet build --configuration Release --no-restore
           
