@@ -1,0 +1,75 @@
+version: '3.8'
+
+# Configuration Docker Compose pour l'environnement de développement
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  # Base de données SQL Server avec configuration de développement
+  cesizen-database:
+    environment:
+      SA_PASSWORD: "DevPassword123!"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Express"
+    volumes:
+      - cesizen_dev_sqldata:/var/opt/mssql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    ports:
+      - "1433:1433"
+
+  # Application avec configuration de développement
+  cesizen-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build  # Utilise l'étape de build pour le développement
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      - ConnectionStrings__DefaultConnection=Server=cesizen-database;Database=CESIZen;User Id=sa;Password=DevPassword123!;TrustServerCertificate=true;MultipleActiveResultSets=true;
+      # Configuration pour le rechargement à chaud
+      - DOTNET_USE_POLLING_FILE_WATCHER=true
+      - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=false
+    volumes:
+      # Monter le code source pour le développement
+      - ./CESIZen:/src/CESIZen:ro
+      - ./CESIZen/wwwroot:/app/wwwroot
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    command: ["dotnet", "watch", "run", "--project", "/src/CESIZen/CESIZen.csproj"]
+
+  # Adminer pour gérer la base de données
+  adminer:
+    image: adminer
+    container_name: cesizen_adminer
+    ports:
+      - "8090:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: cesizen-database
+    networks:
+      - cesizen-network
+    depends_on:
+      - cesizen-database
+
+  # Redis pour le cache (optionnel)
+  redis:
+    image: redis:7-alpine
+    container_name: cesizen_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - cesizen-network
+    command: redis-server --appendonly yes
+    volumes:
+      - cesizen_redis_data:/data
+
+volumes:
+  cesizen_dev_sqldata:
+    driver: local
+  cesizen_redis_data:
+    driver: local
+
+networks:
+  cesizen-network:
+    driver: bridge

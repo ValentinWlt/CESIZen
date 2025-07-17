@@ -1,0 +1,82 @@
+# .dockerignore pour CESIZen
+
+# Exclure les fichiers et dossiers non nécessaires pour la construction Docker
+
+# Git
+**/.git
+**/.gitignore
+.git
+.gitignore
+
+# IDE et éditeurs
+**/.vs
+**/.vscode
+**/.idea
+*.swp
+*.swo
+
+# Build et bin
+**/bin
+**/obj
+**/out
+
+# Tests
+**/TestResults
+**/*.[Tt]ests
+coverage*
+*.coverage
+*.coveragexml
+
+# Docker
+**/docker-compose*
+**/compose*
+**/Dockerfile*
+**/.dockerignore
+
+# NuGet
+**/packages
+**/*.nuget.props
+**/*.nuget.targets
+
+# Logs
+**/logs
+**/*.log
+
+# Runtime
+**/wwwroot/dist
+**/node_modules
+**/npm-debug.log
+
+# Temporary files
+**/tmp
+**/temp
+**/.tmp
+
+# User specific files
+**/*.user
+**/*.suo
+**/*.cache
+**/*.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+bld/
+[Ll]og/
+
+# Documentation
+README.md
+LICENSE
+*.md
+!**/wwwroot/**/*.md
+
+# Autres
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

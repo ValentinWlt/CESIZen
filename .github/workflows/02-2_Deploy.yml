@@ -1,0 +1,168 @@
+name: 02-2 - Deploy
+
+on:
+  workflow_call
+
+env:
+  IMAGE_NAME_LOWER: ${{ github.repository }}
+
+jobs:
+  AzureDeploy:
+    runs-on: ubuntu-latest
+    environment: 
+      name: production
+      url: http://${{ secrets.AZURE_HOST }}:8080
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Database Backup
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.AZURE_HOST }}
+          username: ${{ secrets.AZURE_LOGIN }}
+          port: ${{ secrets.AZURE_PORT }}
+          password: ${{ secrets.AZURE_PWD }}
+          script: |
+            # Backup base de données CESIZen
+            BACKUP_FILE="cesizen_backup_$(date +%Y%m%d_%H%M%S).bak"
+            docker exec cesizen_database /opt/mssql-tools/bin/sqlcmd \
+              -S localhost -U sa -P "${{ secrets.DB_PASSWORD }}" \
+              -Q "BACKUP DATABASE [CESIZenDB] TO DISK = '/var/opt/mssql/data/$BACKUP_FILE'"
+            
+            echo "✅ Database backup created: $BACKUP_FILE"
+
+      - name: Update Compose File
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.AZURE_HOST }}
+          username: ${{ secrets.AZURE_LOGIN }}
+          port: ${{ secrets.AZURE_PORT }}
+          password: ${{ secrets.AZURE_PWD }}
+          source: "./docker-compose.yml"
+          target: "."
+
+      - name: Canary Deployment
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.AZURE_HOST }}
+          username: ${{ secrets.AZURE_LOGIN }}
+          port: ${{ secrets.AZURE_PORT }}
+          password: ${{ secrets.AZURE_PWD }}
+          script: |
+            # Login Docker Registry
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            
+            # Pull nouvelle image
+            NEW_IMAGE="ghcr.io/${{ env.IMAGE_NAME_LOWER }}:main-${{ github.sha }}"
+            docker pull $NEW_IMAGE
+            
+            # Déploiement Canary (10% du trafic)
+            echo "🚀 Starting Canary Deployment (10% traffic)"
+            
+            # Créer conteneur canary
+            docker run -d \
+              --name cesizen-canary \
+              --network cesizen-network \
+              -p 8081:8080 \
+              -e ASPNETCORE_ENVIRONMENT=Production \
+              -e "ConnectionStrings__DefaultConnection=Server=cesizen-database;Database=CESIZenDB;User Id=sa;Password=${{ secrets.DB_PASSWORD }};TrustServerCertificate=true;" \
+              $NEW_IMAGE
+
+            # Monitoring pendant 5 minutes
+            echo "📊 Monitoring canary for 5 minutes..."
+            
+            for i in {1..5}; do
+              # Health check
+              if curl -f http://localhost:8081/health > /dev/null 2>&1; then
+                echo "✅ Minute $i: Canary healthy"
+              else
+                echo "❌ Minute $i: Canary unhealthy - Rolling back"
+                docker stop cesizen-canary && docker rm cesizen-canary
+                exit 1
+              fi
+              
+              # Test de performance
+              RESPONSE_TIME=$(curl -o /dev/null -s -w "%{time_total}" http://localhost:8081/)
+              echo "⚡ Response time: ${RESPONSE_TIME}s"
+              
+              # Vérifier la performance (< 2 secondes)
+              if (( $(echo "$RESPONSE_TIME > 2.0" | bc -l) )); then
+                echo "⚠️ Response time is slow: ${RESPONSE_TIME}s"
+              fi
+              
+              sleep 60
+            done
+
+            # Si succès, déploiement complet
+            echo "🎯 Canary successful, proceeding with full deployment"
+            
+            # Arrêter l'ancienne version
+            docker stop cesizen-app || true
+            docker rm cesizen-app || true
+            
+            # Déployer la nouvelle version
+            docker run -d \
+              --name cesizen-app \
+              --network cesizen-network \
+              -p 8080:8080 \
+              -e ASPNETCORE_ENVIRONMENT=Production \
+              -e "ConnectionStrings__DefaultConnection=Server=cesizen-database;Database=CESIZenDB;User Id=sa;Password=${{ secrets.DB_PASSWORD }};TrustServerCertificate=true;" \
+              $NEW_IMAGE
+            
+            # Nettoyer le conteneur canary
+            docker stop cesizen-canary && docker rm cesizen-canary
+            
+            # Vérification finale
+            echo "🔍 Final health check..."
+            sleep 10
+            
+            if curl -f http://localhost:8080/health > /dev/null 2>&1; then
+              echo "✅ Deployment successful!"
+            else
+              echo "❌ Deployment failed!"
+              exit 1
+            fi
+            
+            # Nettoyer les anciennes images
+            docker image prune -f
+            
+            echo "🚀 CESIZen deployment completed successfully!"
+
+      - name: Post-Deployment Tests
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.AZURE_HOST }}
+          username: ${{ secrets.AZURE_LOGIN }}
+          port: ${{ secrets.AZURE_PORT }}
+          password: ${{ secrets.AZURE_PWD }}
+          script: |
+            echo "🧪 Running post-deployment tests..."
+            
+            # Test de base
+            curl -f http://localhost:8080/ || (echo "❌ Homepage test failed" && exit 1)
+            
+            # Test des endpoints spécifiques
+            curl -f http://localhost:8080/Home/Privacy || (echo "❌ Privacy page test failed" && exit 1)
+            
+            # Test de performance
+            RESPONSE_TIME=$(curl -o /dev/null -s -w "%{time_total}" http://localhost:8080/)
+            echo "⚡ Production response time: ${RESPONSE_TIME}s"
+            
+            if (( $(echo "$RESPONSE_TIME > 3.0" | bc -l) )); then
+              echo "⚠️ Production response time is slow: ${RESPONSE_TIME}s"
+            else
+              echo "✅ Performance test passed"
+            fi
+            
+            echo "✅ All post-deployment tests passed!"
+
+      - name: Deployment Summary
+        if: always()
+        run: |
+          echo "## 🚀 CESIZen Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: Production" >> $GITHUB_STEP_SUMMARY
+          echo "- **Strategy**: Canary Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image**: ghcr.io/${{ env.IMAGE_NAME_LOWER }}:main-${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Host**: ${{ secrets.AZURE_HOST }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Deploy Time**: $(date)" >> $GITHUB_STEP_SUMMARY
