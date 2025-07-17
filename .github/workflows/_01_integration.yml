@@ -9,8 +9,10 @@ jobs:
   Test_App:
     uses: ./.github/workflows/01-1_TestApp.yml
 
+  Security_Analysis:
+    uses: ./.github/workflows/01-3_Security.yml
+
   Quality_SonarQube:
     needs: [Test_App]
     uses: ./.github/workflows/01-2_SonarQube.yml
     secrets: inherit
-

@@ -6,7 +6,11 @@ on:
       - main
 
 jobs:
+  Security_Check:
+    uses: ./.github/workflows/01-3_Security.yml
+
   Dockerbuild:
+    needs: [Security_Check]
     uses: ./.github/workflows/02-1_Dockerbuild.yml
     secrets: inherit
 

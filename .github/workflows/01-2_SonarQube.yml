@@ -48,14 +48,15 @@ jobs:
             exit 1
           fi
           
-          # Configuration adaptée à votre repository
+          # Configuration adaptée au projet CESIZen
           dotnet sonarscanner begin \
-            /k:"${{ github.repository_owner }}_${{ github.event.repository.name }}" \
+            /k:"${{ github.repository_owner }}_CESIZen" \
             /o:"${{ github.repository_owner }}" \
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
             /d:sonar.cs.opencover.reportsPaths="coverage/**/coverage.opencover.xml" \
-            /d:sonar.exclusions="**/bin/**,**/obj/**,**/*.js,**/*.css"
+            /d:sonar.exclusions="**/bin/**,**/obj/**,**/*.js,**/*.css,**/wwwroot/lib/**" \
+            /d:sonar.coverage.exclusions="**/Program.cs,**/Startup.cs,**/Migrations/**,**/Tests/**"
           
           dotnet build --configuration Release --no-restore
           

@@ -1,48 +1,43 @@
 services:
-  # Base de données SQL Server
   cesizen-database:
     container_name: cesizen_database
     image: mcr.microsoft.com/mssql/server:2022-latest
-    user: "0:0"
     environment:
-      SA_PASSWORD: "CesiZen123!SecurePass"
+      SA_PASSWORD: "${DB_PASSWORD}"
       ACCEPT_EULA: "Y"
       MSSQL_PID: "Express"
     ports:
       - "1433:1433"
     volumes:
       - cesizen_sqldata:/var/opt/mssql/data
-    # Healthcheck simplifié - teste juste la connexion SQL Server
-    healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'CesiZen123!SecurePass' -Q 'SELECT 1' || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 10
-      start_period: 90s
     networks:
       - cesizen-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${DB_PASSWORD} -Q 'SELECT 1'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
-  # Application CESIZen
   cesizen-app:
     container_name: cesizen_app
-    build:
-      context: .
-      dockerfile: Dockerfile
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_HTTP_PORTS=8080
-      # SUPPRESSION COMPLETE DE HTTPS
-      - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=Server=cesizen-database;Database=CESIZen;User Id=sa;Password=CesiZen123!SecurePass;TrustServerCertificate=true;MultipleActiveResultSets=true;
-    ports:
-      - "8080:8080"
+    image: ghcr.io/${GITHUB_REPOSITORY,,}:latest
     depends_on:
       cesizen-database:
         condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ConnectionStrings__DefaultConnection: "Server=cesizen-database;Database=CESIZenDB;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=true;"
+    ports:
+      - "8080:8080"
     networks:
       - cesizen-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   cesizen_sqldata:

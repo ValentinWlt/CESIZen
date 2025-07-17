@@ -23,7 +23,7 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          dotnet test R2.Tests/R2.Tests.csproj \
+          dotnet test CESIZen.Tests/CESIZen.Tests.csproj \
             --configuration Release \
             --no-build \
             --verbosity normal \
@@ -47,37 +47,37 @@ jobs:
         run: |
           cat > docker-compose-test.yml << 'EOF'
           services:
-            r2-database:
-              container_name: r2_database_test
+            cesizen-database:
+              container_name: cesizen_database_test
               image: mcr.microsoft.com/mssql/server:2022-latest
               user: "0:0"
               environment:
-                SA_PASSWORD: "R2SecurePass123!"
+                SA_PASSWORD: "CESIZenSecurePass123!"
                 ACCEPT_EULA: "Y"
                 MSSQL_PID: "Express"
               ports:
                 - "1434:1433"  # Port différent pour éviter les conflits
               volumes:
-                - r2_test_sqldata:/var/opt/mssql/data
+                - cesizen_test_sqldata:/var/opt/mssql/data
               healthcheck:
-                test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P R2SecurePass123! -Q 'SELECT 1'"]
+                test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P CESIZenSecurePass123! -Q 'SELECT 1'"]
                 interval: 30s
                 timeout: 10s
                 retries: 5
               networks:
-                - r2-test-network
+                - cesizen-test-network
 
           volumes:
-            r2_test_sqldata:
+            cesizen_test_sqldata:
 
           networks:
-            r2-test-network:
+            cesizen-test-network:
               driver: bridge
           EOF
 
       - name: Start Database for E2E
         run: |
-          docker compose -f docker-compose-test.yml up -d r2-database
+          docker compose -f docker-compose-test.yml up -d cesizen-database
           echo "⏳ Waiting for database to be ready..."
           sleep 45
 
@@ -89,13 +89,13 @@ jobs:
       - name: Build and Run App for E2E
         run: |
           # Utiliser une connection string pointant vers le conteneur de test
-          export ConnectionStrings__DefaultConnection="Server=localhost,1434;Database=RessourcesRelationnelles;User Id=sa;Password=R2SecurePass123!;TrustServerCertificate=true;"
+          export ConnectionStrings__DefaultConnection="Server=localhost,1434;Database=CESIZenDB;User Id=sa;Password=CESIZenSecurePass123!;TrustServerCertificate=true;"
           export ASPNETCORE_ENVIRONMENT="Testing"
           export ASPNETCORE_HTTP_PORTS="5000"
           
           dotnet build --configuration Release
           # Lancer l'app en arrière-plan
-          dotnet run --project R2.UI/R2.UI.csproj --configuration Release --urls "http://localhost:5000" &
+          dotnet run --project CESIZen/CESIZen.csproj --configuration Release --urls "http://localhost:5000" &
           APP_PID=$!
           echo "APP_PID=$APP_PID" >> $GITHUB_ENV
           
@@ -130,6 +130,13 @@ jobs:
           if (( $(echo "$RESPONSE_TIME > 5.0" | bc -l) )); then
             echo "⚠️ Response time is slow but acceptable for tests: ${RESPONSE_TIME}s"
           fi
+          
+          # Test des endpoints spécifiques à CESIZen
+          echo "Testing CESIZen specific endpoints..."
+          curl -f http://localhost:5000/Home/Privacy || (echo "❌ Privacy page test failed" && exit 1)
+          
+          # Test d'un endpoint d'évaluation de stress si disponible
+          curl -s http://localhost:5000/StressEvaluation > /dev/null || echo "⚠️ StressEvaluation endpoint not available"
           
           echo "✅ All E2E tests passed!"
 
