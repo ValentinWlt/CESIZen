@@ -1,4 +1,4 @@
-name: 01-2 - Integration SonarQube (Test)
+name: 01-2 - Integration SonarQube
 
 on:
   workflow_call
@@ -10,18 +10,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Shallow clones should be disabled for better analysis
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
-      - name: Set up JDK 17
+      - name: Setup Java (required for SonarCloud)
         uses: actions/setup-java@v4
         with:
-          java-version: 17
-          distribution: 'zulu'
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Download Coverage Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dotnet-coverage-report
+          path: ./coverage
+        continue-on-error: true  # Au cas où les tests n'ont pas généré de couverture
 
       - name: Install SonarCloud scanner
         run: |
@@ -30,23 +37,47 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Test SonarCloud Connection
+      - name: Build and analyze
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
+          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
         run: |
-          echo "🔍 Testing SonarCloud connection with correct info..."
-          echo "Organization: bloc3-orga"
-          echo "Project: bloc3-orga_RessourcesRelationnelles"
+          # Vérifier que les tokens existent
+          if [ -z "$SONAR_TOKEN" ]; then
+            echo "❌ SONAR_TOKEN is not set!"
+            echo "ℹ️ Please configure SonarCloud following these steps:"
+            echo "1. Go to https://sonarcloud.io"
+            echo "2. Login with GitHub"
+            echo "3. Create a new project for your repository"
+            echo "4. Go to My Account > Security > Generate Token"
+            echo "5. Add the token as SONAR_TOKEN in GitHub secrets"
+            echo "6. Add your organization key as SONAR_ORGANIZATION"
+            echo "7. Add your project key as SONAR_PROJECT_KEY"
+            exit 1
+          fi
           
-          # Test simple avec les bonnes informations
+          # Configuration avec les valeurs exactes de votre SonarCloud
+          ORGANIZATION="${SONAR_ORGANIZATION:-valentinwlt}"
+          PROJECT_KEY="${SONAR_PROJECT_KEY:-ValentinWlt_CESIZen}"
+          
+          echo "🔍 SonarCloud Configuration:"
+          echo "- Organization: $ORGANIZATION"
+          echo "- Project Key: $PROJECT_KEY"
+          echo "- Host: https://sonarcloud.io"
+          
+          # Configuration adaptée au projet CESIZen
           dotnet sonarscanner begin \
-            /k:"bloc3-orga_RessourcesRelationnelles" \
-            /o:"bloc3-orga" \
+            /k:"$PROJECT_KEY" \
+            /o:"$ORGANIZATION" \
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
-            /d:sonar.host.url="https://sonarcloud.io"
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.cs.opencover.reportsPaths="coverage/**/coverage.opencover.xml" \
+            /d:sonar.exclusions="**/bin/**,**/obj/**,**/*.js,**/*.css,**/wwwroot/lib/**" \
+            /d:sonar.coverage.exclusions="**/Program.cs,**/Startup.cs,**/Migrations/**,**/Tests/**" \
+            /d:sonar.scanner.skipJreProvisioning=false
           
           dotnet build --configuration Release --no-restore
           
           dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
-          
-          echo "✅ SonarCloud test completed!"
