@@ -1,48 +1,52 @@
-services:
-  cesizen-database:
-    container_name: cesizen_database
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    environment:
-      SA_PASSWORD: "${DB_PASSWORD}"
-      ACCEPT_EULA: "Y"
-      MSSQL_PID: "Express"
-    ports:
-      - "1433:1433"
-    volumes:
-      - cesizen_sqldata:/var/opt/mssql/data
-    networks:
-      - cesizen-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${DB_PASSWORD} -Q 'SELECT 1'"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-
-  cesizen-app:
-    container_name: cesizen_app
-    image: ghcr.io/${GITHUB_REPOSITORY,,}:latest
-    depends_on:
-      cesizen-database:
-        condition: service_healthy
-    environment:
-      ASPNETCORE_ENVIRONMENT: "Production"
-      ConnectionStrings__DefaultConnection: "Server=cesizen-database;Database=CESIZenDB;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=true;"
-    ports:
-      - "8080:8080"
-    networks:
-      - cesizen-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-volumes:
-  cesizen_sqldata:
-    driver: local
-
-networks:
-  cesizen-network:
-    driver: bridge
+- name: Canary Deployment
+  uses: appleboy/ssh-action@v1.0.3
+  with:
+    host: ${{ secrets.AZURE_HOST }}
+    username: ${{ secrets.AZURE_LOGIN }}
+    port: ${{ secrets.AZURE_PORT }}
+    password: ${{ secrets.AZURE_PWD }}
+    script: |
+      # Login Docker Registry
+      echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      
+      # Export variables for docker-compose
+      export GITHUB_REPOSITORY="${{ env.IMAGE_NAME_LOWER }}"
+      export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
+      
+      # Pull nouvelle image
+      NEW_IMAGE="ghcr.io/${{ env.IMAGE_NAME_LOWER }}:main-${{ github.sha }}"
+      docker pull $NEW_IMAGE
+      
+      # Créer un service canary temporaire
+      cat > docker-compose.canary.yml << EOF
+      services:
+        cesizen-canary:
+          container_name: cesizen_canary
+          image: ${NEW_IMAGE}
+          depends_on:
+            cesizen-database:
+              condition: service_healthy
+          environment:
+            ASPNETCORE_ENVIRONMENT: "Production"
+            ConnectionStrings__DefaultConnection: "Server=cesizen-database;Database=CESIZenDB;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=true;"
+          ports:
+            - "8081:8080"
+          networks:
+            - cesizen-network
+          restart: "no"
+      
+      networks:
+        cesizen-network:
+          external: true
+      EOF
+      
+      # Démarrer le canary
+      docker-compose -f docker-compose.yml -f docker-compose.canary.yml up -d cesizen-canary
+      
+      # ... tests et monitoring ...
+      
+      # Si succès, déployer en production
+      docker-compose -f docker-compose.yml up -d cesizen-app
+      
+      # Nettoyer le canary
+      docker-compose -f docker-compose.canary.yml down
