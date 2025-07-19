@@ -66,10 +66,35 @@ jobs:
             # S'assurer que la base de données fonctionne
             echo "🔍 Checking if database is running..."
             if ! docker ps | grep cesizen_database; then
-              echo "🚀 Starting database..."
-              docker compose up -d cesizen-database
+              echo "🚀 Starting database manually..."
+              docker run -d \
+                --name cesizen_database \
+                --network cesizen-network \
+                -p 1433:1433 \
+                -e SA_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+                -e ACCEPT_EULA=Y \
+                -e MSSQL_PID=Express \
+                -v cesizen_sqldata:/var/opt/mssql/data \
+                mcr.microsoft.com/mssql/server:2022-latest
+              
               echo "⏳ Waiting for database to be ready..."
-              sleep 30
+              sleep 45
+              
+              # Vérifier que la base est prête
+              for i in {1..10}; do
+                if docker exec cesizen_database /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "${{ secrets.DB_PASSWORD }}" -Q "SELECT 1" > /dev/null 2>&1; then
+                  echo "✅ Database is ready!"
+                  break
+                elif [ $i -eq 10 ]; then
+                  echo "❌ Database failed to start after 10 attempts"
+                  exit 1
+                else
+                  echo "⏳ Waiting for database... attempt $i/10"
+                  sleep 10
+                fi
+              done
+            else
+              echo "✅ Database is already running"
             fi
             
             # Pull nouvelle image
@@ -90,7 +115,7 @@ jobs:
               --network cesizen-network \
               -p 8081:8080 \
               -e ASPNETCORE_ENVIRONMENT=Production \
-              -e "ConnectionStrings__DefaultConnection=Server=cesizen-database;Database=CESIZenDB;User Id=sa;Password=${{ secrets.DB_PASSWORD }};TrustServerCertificate=true;" \
+              -e "ConnectionStrings__DefaultConnection=Server=cesizen_database;Database=CESIZenDB;User Id=sa;Password=${{ secrets.DB_PASSWORD }};TrustServerCertificate=true;" \
               $NEW_IMAGE
             
             # Attendre que le canary démarre
@@ -166,7 +191,7 @@ jobs:
                 --network cesizen-network \
                 -p 8080:8080 \
                 -e ASPNETCORE_ENVIRONMENT=Production \
-                -e "ConnectionStrings__DefaultConnection=Server=cesizen-database;Database=CESIZenDB;User Id=sa;Password=${{ secrets.DB_PASSWORD }};TrustServerCertificate=true;" \
+                -e "ConnectionStrings__DefaultConnection=Server=cesizen_database;Database=CESIZenDB;User Id=sa;Password=${{ secrets.DB_PASSWORD }};TrustServerCertificate=true;" \
                 $NEW_IMAGE
               
               # Nettoyer le conteneur canary

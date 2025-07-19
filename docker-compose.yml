@@ -21,7 +21,7 @@ services:
 
   cesizen-app:
     container_name: cesizen_app
-    image: ghcr.io/${GITHUB_REPOSITORY,,}:latest
+    image: "ghcr.io/valentinwlt/cesizen:latest"
     depends_on:
       cesizen-database:
         condition: service_healthy
