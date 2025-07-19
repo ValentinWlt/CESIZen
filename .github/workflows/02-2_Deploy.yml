@@ -67,7 +67,7 @@ jobs:
             echo "🔍 Checking if database is running..."
             if ! docker ps | grep cesizen_database; then
               echo "🚀 Starting database..."
-              docker-compose up -d cesizen-database
+              docker compose up -d cesizen-database
               echo "⏳ Waiting for database to be ready..."
               sleep 30
             fi
@@ -95,25 +95,50 @@ jobs:
             
             # Attendre que le canary démarre
             echo "⏳ Waiting for canary to start..."
-            sleep 15
+            sleep 30
+            
+            # Vérifier que le conteneur fonctionne
+            echo "🔍 Checking canary container status..."
+            docker ps | grep cesizen-canary || echo "⚠️ Canary container not running"
+            docker logs cesizen-canary --tail 20 || echo "⚠️ Cannot get canary logs"
 
             # Monitoring pendant 3 minutes (réduit pour les tests)
             echo "📊 Monitoring canary for 3 minutes..."
             
             CANARY_HEALTHY=true
             for i in {1..3}; do
-              # Health check simple (on teste la page d'accueil)
-              if curl -f http://localhost:8081/ > /dev/null 2>&1; then
-                echo "✅ Minute $i: Canary healthy"
-              else
-                echo "❌ Minute $i: Canary unhealthy - Rolling back"
-                docker stop cesizen-canary && docker rm cesizen-canary
+              echo "🩺 Health check attempt $i/3..."
+              
+              # Vérifier d'abord que le conteneur fonctionne
+              if ! docker ps | grep cesizen-canary > /dev/null; then
+                echo "❌ Canary container is not running!"
+                docker logs cesizen-canary --tail 10
                 CANARY_HEALTHY=false
                 break
               fi
               
+              # Health check simple (on teste la page d'accueil)
+              if curl -f -m 10 http://localhost:8081/ > /dev/null 2>&1; then
+                echo "✅ Minute $i: Canary healthy"
+              else
+                echo "❌ Minute $i: Canary unhealthy"
+                echo "🔍 Debugging canary..."
+                docker logs cesizen-canary --tail 10
+                
+                # Essayer encore une fois avec plus de détails
+                echo "🔍 Testing with verbose output..."
+                curl -v http://localhost:8081/ || true
+                
+                if [ $i -eq 3 ]; then
+                  echo "❌ Final attempt failed - Rolling back"
+                  docker stop cesizen-canary && docker rm cesizen-canary
+                  CANARY_HEALTHY=false
+                  break
+                fi
+              fi
+              
               # Test de performance
-              RESPONSE_TIME=$(curl -o /dev/null -s -w "%{time_total}" http://localhost:8081/ 2>/dev/null || echo "999")
+              RESPONSE_TIME=$(curl -o /dev/null -s -w "%{time_total}" -m 10 http://localhost:8081/ 2>/dev/null || echo "999")
               echo "⚡ Response time: ${RESPONSE_TIME}s"
               
               # Vérifier la performance (< 3 secondes)
@@ -122,6 +147,7 @@ jobs:
               fi
               
               if [ $i -lt 3 ]; then
+                echo "⏳ Waiting 60 seconds before next check..."
                 sleep 60
               fi
             done
