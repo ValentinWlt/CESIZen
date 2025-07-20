@@ -6,6 +6,9 @@ services:
       SA_PASSWORD: "${DB_PASSWORD}"
       ACCEPT_EULA: "Y"
       MSSQL_PID: "Express"
+      # Optimisations mémoire pour 4GB RAM
+      MSSQL_MEMORY_LIMIT_MB: "2048"  # Réserver 2GB pour SQL Server
+      MSSQL_TCP_PORT: "1433"
     ports:
       - "1433:1433"
     volumes:
@@ -13,11 +16,19 @@ services:
     networks:
       - cesizen-network
     restart: unless-stopped
+    # Limites containers optimisées pour 4GB
+    deploy:
+      resources:
+        limits:
+          memory: 2.5G
+        reservations:
+          memory: 1.5G
     healthcheck:
       test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${DB_PASSWORD} -Q 'SELECT 1'"]
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 120s  # Plus de temps pour le démarrage
 
   cesizen-app:
     container_name: cesizen_app
@@ -27,18 +38,30 @@ services:
         condition: service_healthy
     environment:
       ASPNETCORE_ENVIRONMENT: "Production"
-      ConnectionStrings__DefaultConnection: "Server=cesizen-database;Database=CESIZenDB;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=true;"
+      ConnectionStrings__DefaultConnection: "Server=cesizen-database;Database=CESIZenDB;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=true;Connection Timeout=60;"
+      # Optimisations ASP.NET Core
+      ASPNETCORE_URLS: "http://+:8080"
+      DOTNET_GCServer: "1"
+      DOTNET_GCConcurrent: "1"
+      DOTNET_GCRetainVM: "1"
     ports:
       - "8080:8080"
     networks:
       - cesizen-network
     restart: unless-stopped
+    # Limites pour l'application ASP.NET
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 60s
 
 volumes:
   cesizen_sqldata:
