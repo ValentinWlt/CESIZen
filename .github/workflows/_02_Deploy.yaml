@@ -7,7 +7,7 @@ on:
 
 jobs:
   SnykSecurity:
-    uses: ./.github/workflows/01-4_SnykSecurity.yAml
+    uses: ./.github/workflows/01-4_SnykSecurity.yaml
     with:
       scan_type: 'dependencies' 
     secrets: inherit
