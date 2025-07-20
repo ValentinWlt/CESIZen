@@ -1,0 +1,24 @@
+# Snyk (https://snyk.io) policy file
+version: v1.25.0
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore: {}
+
+# patches apply the minimum changes required to fix a vulnerability
+patch: {}
+
+# Configuration pour .NET
+language-settings:
+  dotnet:
+    targetFramework: net8.0
+    nugetConfigPath: nuget.config
+    
+# Seuils de sévérité
+severity-threshold: medium
+
+# Exclusions (optionnel)
+exclude:
+  global:
+    - "bin/**"
+    - "obj/**"
+    - "**/node_modules/**"
+    - "**/*.min.js"

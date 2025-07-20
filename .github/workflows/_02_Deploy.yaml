@@ -6,15 +6,18 @@ on:
       - main
 
 jobs:
-  Security_Check:
-    uses: ./.github/workflows/01-3_Security.yaml
+  SnykSecurity:
+    uses: ./.github/workflows/01-4_Snyk.yml
+    with:
+      scan_type: 'dependencies'  
+    secrets: inherit
 
   Dockerbuild:
-    needs: [Security_Check]
-    uses: ./.github/workflows/02-1_Dockerbuild.yaml
+    needs: [SnykSecurity] 
+    uses: ./.github/workflows/02-1_Dockerbuild.yml
     secrets: inherit
 
   Deploy:
     needs: [Dockerbuild]
-    uses: ./.github/workflows/02-2_Deploy.yaml
+    uses: ./.github/workflows/02-2_Deploy.yml
     secrets: inherit
