@@ -1,7 +1,10 @@
-name: 02-1 Delivery - Docker GHCR
+name: 02-1 Delivery - Docker GHCR Enhanced
 
 on:
-  workflow_call
+  workflow_call:
+    secrets:
+      SNYK_TOKEN:
+        required: true
 
 env:
   REGISTRY: ghcr.io
@@ -34,20 +37,20 @@ jobs:
           tags: |
             type=ref,event=branch
             type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build and Push CESIZen App
+      - name: Build and Push R2 Application
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile
+          file: R2.UI/Dockerfile
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}:main-${{ github.sha }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Docker Security Scan
+      # EXISTANT: Trivy Security Scan
+      - name: Docker Security Scan (Trivy)
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}:latest'
@@ -60,11 +63,17 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
-      - name: Docker Image Summary
+      # NOUVEAU: Snyk Docker Scan (complémentaire à Trivy)
+      - name: Docker Security Scan (Snyk)
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}:latest'
+          args: --severity-threshold=high --file=R2.UI/Dockerfile
+
+      - name: Upload Snyk Docker results
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
-        run: |
-          echo "## 🐳 Docker Build Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- **Image**: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}:latest" >> $GITHUB_STEP_SUMMARY
-          echo "- **SHA Tag**: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}:main-${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Registry**: ${{ env.REGISTRY }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Build Time**: $(date)" >> $GITHUB_STEP_SUMMARY
+        with:
+          sarif_file: 'snyk-docker.sarif'

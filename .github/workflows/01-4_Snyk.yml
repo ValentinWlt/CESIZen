@@ -1,0 +1,59 @@
+name: 01-4 - Snyk Security Analysis
+
+on:
+  workflow_call:
+    inputs:
+      scan_type:
+        description: 'Type of scan: dependencies, code, docker, all'
+        required: false
+        default: 'all'
+        type: string
+
+env:
+  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+jobs:
+  snyk-dependencies:
+    name: Snyk Dependencies Scan
+    runs-on: ubuntu-latest
+    if: ${{ inputs.scan_type == 'dependencies' || inputs.scan_type == 'all' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Run Snyk Dependencies Scan
+        uses: snyk/actions/dotnet@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high --file=CESIZen.sln
+
+      - name: Upload results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: snyk.sarif
+
+  snyk-code:
+    name: Snyk Code Analysis  
+    runs-on: ubuntu-latest
+    if: ${{ inputs.scan_type == 'code' || inputs.scan_type == 'all' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Snyk Code Analysis
+        uses: snyk/actions/dotnet@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: code test
+          args: --severity-threshold=high

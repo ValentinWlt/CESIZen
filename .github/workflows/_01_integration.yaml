@@ -7,12 +7,12 @@ on:
 
 jobs:
   Test_App:
-    uses: ./.github/workflows/01-1_TestApp.yml
+    uses: ./.github/workflows/01-1_TestApp.yaml
 
   Security_Analysis:
-    uses: ./.github/workflows/01-3_Security.yml
+    uses: ./.github/workflows/01-3_Security.yaml
 
   Quality_SonarQube:
     needs: [Test_App]
-    uses: ./.github/workflows/01-2_SonarQube.yml
+    uses: ./.github/workflows/01-2_SonarQube.yaml
     secrets: inherit

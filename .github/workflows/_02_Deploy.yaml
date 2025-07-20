@@ -6,11 +6,14 @@ on:
       - main
 
 jobs:
-  Security_Check:
-    uses: ./.github/workflows/01-3_Security.yml
+  SnykSecurity:
+    uses: ./.github/workflows/01-4_SnykSecurity.yml
+    with:
+      scan_type: 'dependencies' 
+    secrets: inherit
 
   Dockerbuild:
-    needs: [Security_Check]
+    needs: [SnykSecurity] 
     uses: ./.github/workflows/02-1_Dockerbuild.yml
     secrets: inherit
 
