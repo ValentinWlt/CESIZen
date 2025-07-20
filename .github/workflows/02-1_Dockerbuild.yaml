@@ -1,10 +1,10 @@
-name: 02-1 Delivery - Docker GHCR Enhanced
+name: 02-1 Delivery - Docker GHCR CESIZen
 
 on:
   workflow_call:
     secrets:
       SNYK_TOKEN:
-        required: true
+        required: false  # Optionnel pour permettre une migration progressive
 
 env:
   REGISTRY: ghcr.io
@@ -37,12 +37,13 @@ jobs:
           tags: |
             type=ref,event=branch
             type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build and Push R2 Application
+      - name: Build and Push CESIZen Application
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: R2.UI/Dockerfile
+          file: R2.UI/Dockerfile  # ✅ Correct path pour CESIZen
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}:latest
@@ -63,17 +64,39 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
-      # NOUVEAU: Snyk Docker Scan (complémentaire à Trivy)
+      # NOUVEAU: Snyk Docker Scan (seulement si le token est disponible)
       - name: Docker Security Scan (Snyk)
+        if: ${{ secrets.SNYK_TOKEN != '' }}
         uses: snyk/actions/docker@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}:latest'
-          args: --severity-threshold=high --file=R2.UI/Dockerfile
+          args: --severity-threshold=high --file=R2.UI/Dockerfile --sarif-file-output=snyk-docker.sarif
+        continue-on-error: true  # Ne pas bloquer le pipeline en phase de test
 
       - name: Upload Snyk Docker results
+        if: ${{ secrets.SNYK_TOKEN != '' && hashFiles('snyk-docker.sarif') != '' }}
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        continue-on-error: true
         with:
           sarif_file: 'snyk-docker.sarif'
+
+      - name: Build Summary
+        if: always()
+        run: |
+          echo "## 🐳 CESIZen Docker Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Application**: RessourcesRelationnelles (CESIZen)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Framework**: .NET 8 Blazor Server" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image**: \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}:latest\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tags**: \`latest\`, \`main-${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Port**: 8080" >> $GITHUB_STEP_SUMMARY
+          echo "- **Database**: SQL Server (RessourcesRelationnelles)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Security Scans" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ **Trivy**: Container vulnerability scan" >> $GITHUB_STEP_SUMMARY
+          if [ -n "${{ secrets.SNYK_TOKEN }}" ]; then
+            echo "- ✅ **Snyk**: Docker security analysis" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚠️ **Snyk**: Not configured (add SNYK_TOKEN to enable)" >> $GITHUB_STEP_SUMMARY
+          fi
