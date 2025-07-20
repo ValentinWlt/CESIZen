@@ -142,9 +142,11 @@ jobs:
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "**Severity Threshold:** ${{ inputs.severity_threshold || 'high' }}" >> $GITHUB_STEP_SUMMARY
             
+            # Vérifier si des échecs ont eu lieu
             if [[ "${{ needs.snyk-dependencies.result }}" == "failure" || "${{ needs.snyk-code.result }}" == "failure" ]]; then
               echo "" >> $GITHUB_STEP_SUMMARY
               echo "⚠️ **Some security issues were detected.** Check the Security tab for details." >> $GITHUB_STEP_SUMMARY
+            fi
           else
             echo "❌ **Snyk Token:** Not configured" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
@@ -152,3 +154,4 @@ jobs:
             echo "1. Create a free account at [snyk.io](https://snyk.io)" >> $GITHUB_STEP_SUMMARY
             echo "2. Get your API token from Settings > General > Auth Token" >> $GITHUB_STEP_SUMMARY
             echo "3. Add it as \`SNYK_TOKEN\` in Repository Settings > Secrets and variables > Actions" >> $GITHUB_STEP_SUMMARY
+          fi
