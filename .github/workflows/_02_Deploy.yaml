@@ -7,9 +7,9 @@ on:
 
 jobs:
   SnykSecurity:
-    uses: ./.github/workflows/01-4_Snyk.yml
+    uses: ./.github/workflows/01-4_SnykSecurity.yml
     with:
-      scan_type: 'dependencies'  
+      scan_type: 'dependencies' 
     secrets: inherit
 
   Dockerbuild:

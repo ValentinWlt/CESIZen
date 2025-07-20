@@ -4,14 +4,10 @@ on:
   workflow_call:
     inputs:
       scan_type:
-        description: 'Type of scan to perform (code, dependencies, docker, all)'
+        description: 'Type of scan: dependencies, code, docker, all'
         required: false
         default: 'all'
         type: string
-  pull_request:
-    branches: [ main, develop ]
-  push:
-    branches: [ main ]
 
 env:
   SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -22,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ inputs.scan_type == 'dependencies' || inputs.scan_type == 'all' }}
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup .NET
@@ -33,110 +29,31 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Run Snyk to check for vulnerabilities
+      - name: Run Snyk Dependencies Scan
         uses: snyk/actions/dotnet@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: --severity-threshold=high --file=CESIZen.sln
 
-      - name: Upload Snyk results to GitHub Code Scanning
+      - name: Upload results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: snyk.sarif
 
   snyk-code:
-    name: Snyk Code Analysis
+    name: Snyk Code Analysis  
     runs-on: ubuntu-latest
     if: ${{ inputs.scan_type == 'code' || inputs.scan_type == 'all' }}
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run Snyk Code analysis
+      - name: Run Snyk Code Analysis
         uses: snyk/actions/dotnet@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: code test
           args: --severity-threshold=high
-
-      - name: Upload Snyk Code results
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: snyk-code.sarif
-
-  snyk-docker:
-    name: Snyk Docker Analysis
-    runs-on: ubuntu-latest
-    if: ${{ inputs.scan_type == 'docker' || inputs.scan_type == 'all' }}
-    needs: []  # Peut tourner en parallèle si l'image est déjà buildée
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Build Docker image for security scan
-        run: |
-          docker build -t cesizen-security-scan:latest -f R2.UI/Dockerfile .
-
-      - name: Run Snyk Docker scan
-        uses: snyk/actions/docker@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          image: cesizen-security-scan:latest
-          args: --severity-threshold=high --file=R2.UI/Dockerfile
-
-      - name: Upload Snyk Docker results
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: snyk-docker.sarif
-
-  snyk-monitor:
-    name: Snyk Monitor for Continuous Monitoring
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Monitor project with Snyk
-        uses: snyk/actions/dotnet@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: monitor
-          args: --project-name=CESIZen-Production --file=CESIZen.sln
-
-  security-summary:
-    name: Security Analysis Summary
-    runs-on: ubuntu-latest
-    needs: [snyk-dependencies, snyk-code, snyk-docker]
-    if: always()
-    steps:
-      - name: Security Summary
-        run: |
-          echo "## 🔒 Security Analysis Summary" >> $GITHUB_STEP_SUMMARY
-          echo "| Tool | Status | Details |" >> $GITHUB_STEP_SUMMARY
-          echo "|------|--------|---------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Snyk Dependencies | ${{ needs.snyk-dependencies.result }} | Vulnerability scan of .NET dependencies |" >> $GITHUB_STEP_SUMMARY
-          echo "| Snyk Code | ${{ needs.snyk-code.result }} | Static analysis of source code |" >> $GITHUB_STEP_SUMMARY
-          echo "| Snyk Docker | ${{ needs.snyk-docker.result }} | Container image vulnerability scan |" >> $GITHUB_STEP_SUMMARY
-          
-          if [[ "${{ needs.snyk-dependencies.result }}" == "failure" || "${{ needs.snyk-code.result }}" == "failure" || "${{ needs.snyk-docker.result }}" == "failure" ]]; then
-            echo "❌ **Critical vulnerabilities detected!** Please review the security findings." >> $GITHUB_STEP_SUMMARY
-            exit 1
-          else
-            echo "✅ **All security checks passed!**" >> $GITHUB_STEP_SUMMARY
-          fi
