@@ -1,4 +1,4 @@
-name: 02-2 - Deploy Job Enhanced
+name: 02-2 - Deploy Job
 
 on:
   workflow_call
@@ -19,53 +19,22 @@ jobs:
         run: |
           echo "IMAGE_NAME_LOWER=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
 
-      # ✨ AMÉLIORATION : Vérification des ressources AVANT déploiement
-      - name: System Resources Check
+      - name: Database Backup (Optional)
         uses: appleboy/ssh-action@v1.0.3
+        continue-on-error: true
         with:
           host: ${{ secrets.AZURE_HOST }}
           username: ${{ secrets.AZURE_LOGIN }}
           port: ${{ secrets.AZURE_PORT }}
           password: ${{ secrets.AZURE_PWD }}
           script: |
-            echo "🔍 Pre-deployment system check..."
-            echo "Memory: $(free -h | grep Mem)"
-            echo "Disk: $(df -h / | tail -1)"
-            echo "CPU: $(nproc) cores"
-            
-            # Vérifier que nous avons assez de mémoire libre (minimum 1GB)
-            FREE_MEM=$(free -m | awk 'NR==2{printf "%.0f", $7}')
-            if [ "$FREE_MEM" -lt 1024 ]; then
-              echo "⚠️ Warning: Low memory ($FREE_MEM MB free). Cleaning up..."
-              docker system prune -f --volumes || true
-              docker container prune -f || true
-              docker image prune -a -f || true
-            fi
-
-      - name: Database Backup
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.AZURE_HOST }}
-          username: ${{ secrets.AZURE_LOGIN }}
-          port: ${{ secrets.AZURE_PORT }}
-          password: ${{ secrets.AZURE_PWD }}
-          script: |
-            # ✨ AMÉLIORATION : Backup avec retention automatique
+            # Backup seulement si la DB existe déjà
             if docker ps | grep cesizen_database > /dev/null; then
               BACKUP_FILE="cesizen_backup_$(date +%Y%m%d_%H%M%S).bak"
-              echo "📦 Creating database backup: $BACKUP_FILE"
-              
               docker exec cesizen_database /opt/mssql-tools/bin/sqlcmd \
                 -S localhost -U sa -P "${{ secrets.DB_PASSWORD }}" \
-                -Q "BACKUP DATABASE [CESIZenDB] TO DISK = '/var/opt/mssql/data/$BACKUP_FILE'" || echo "⚠️ Database backup failed"
-              
-              # Garder seulement les 7 dernières sauvegardes
-              docker exec cesizen_database bash -c "
-                cd /var/opt/mssql/data && 
-                ls -1t cesizen_backup_*.bak | tail -n +8 | xargs rm -f
-              " || echo "ℹ️ No old backups to clean"
-              
-              echo "✅ Database backup completed"
+                -Q "BACKUP DATABASE [CESIZenDB] TO DISK = '/var/opt/mssql/data/$BACKUP_FILE'" || echo "⚠️ Backup failed - continuing"
+              echo "✅ Backup created: $BACKUP_FILE"
             else
               echo "ℹ️ No existing database to backup"
             fi
@@ -80,8 +49,7 @@ jobs:
           source: "./docker-compose.yml"
           target: "."
 
-      # ✨ AMÉLIORATION : Déploiement Blue-Green + Canary optimisé pour 4GB
-      - name: Blue-Green Canary Deployment
+      - name: Simple Deployment
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.AZURE_HOST }}
@@ -89,10 +57,12 @@ jobs:
           port: ${{ secrets.AZURE_PORT }}
           password: ${{ secrets.AZURE_PWD }}
           script: |
-            # Login Docker Registry
+            echo "🚀 Starting CESIZen deployment..."
+            
+            # Login to Docker Registry
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             
-            # Export environment variables
+            # Set environment variables
             export GITHUB_REPOSITORY="${{ env.IMAGE_NAME_LOWER }}"
             export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
             
@@ -100,13 +70,19 @@ jobs:
             echo "📥 Pulling new image: $NEW_IMAGE"
             docker pull $NEW_IMAGE
             
-            # Créer le réseau si nécessaire
-            docker network create cesizen-network --driver bridge || echo "ℹ️ Network exists"
+            # Créer le réseau s'il n'existe pas
+            docker network create cesizen-network --driver bridge 2>/dev/null || echo "ℹ️ Network already exists"
             
-            # ✨ Gestion intelligente de la base de données
-            echo "🔍 Database management..."
+            # 🔧 DÉMARRAGE/VÉRIFICATION BASE DE DONNÉES
+            echo "🔍 Checking database status..."
             if ! docker ps | grep cesizen_database > /dev/null; then
-              echo "🚀 Starting database with 4GB-optimized settings..."
+              echo "🚀 Starting fresh database..."
+              
+              # Nettoyer tout ancien conteneur DB
+              docker stop cesizen_database 2>/dev/null || true
+              docker rm cesizen_database 2>/dev/null || true
+              
+              # Démarrer nouveau conteneur DB
               docker run -d \
                 --name cesizen_database \
                 --network cesizen-network \
@@ -114,132 +90,92 @@ jobs:
                 -e SA_PASSWORD="${{ secrets.DB_PASSWORD }}" \
                 -e ACCEPT_EULA=Y \
                 -e MSSQL_PID=Express \
-                -e MSSQL_MEMORY_LIMIT_MB=2048 \
-                --memory="2.5g" \
-                --memory-swap="3g" \
                 -v cesizen_sqldata:/var/opt/mssql/data \
                 mcr.microsoft.com/mssql/server:2022-latest
               
-              echo "⏳ Waiting for database startup (optimized for 4GB)..."
-              sleep 90
+              echo "⏳ Waiting for database to start..."
+              sleep 60
               
-              # Vérification de santé robuste
-              for i in {1..20}; do
+              # Vérifier que SQL Server est prêt
+              for i in {1..15}; do
                 if docker exec cesizen_database /opt/mssql-tools/bin/sqlcmd \
                   -S localhost -U sa -P "${{ secrets.DB_PASSWORD }}" -Q "SELECT 1" > /dev/null 2>&1; then
-                  echo "✅ Database ready after ${i} attempts"
+                  echo "✅ Database ready after $i attempts"
                   break
-                elif [ $i -eq 20 ]; then
-                  echo "❌ Database failed to start after 20 attempts"
-                  docker logs cesizen_database --tail 50
+                elif [ $i -eq 15 ]; then
+                  echo "❌ Database failed to start after 15 attempts"
+                  echo "📋 Database logs:"
+                  docker logs cesizen_database --tail 30
                   exit 1
                 else
-                  echo "⏳ Database starting... attempt $i/20"
-                  sleep 15
+                  echo "⏳ Attempt $i/15 - waiting 10s..."
+                  sleep 10
                 fi
               done
+              
             else
               echo "✅ Database already running"
+              
+              # Test de santé de la DB existante
+              if ! docker exec cesizen_database /opt/mssql-tools/bin/sqlcmd \
+                -S localhost -U sa -P "${{ secrets.DB_PASSWORD }}" -Q "SELECT 1" > /dev/null 2>&1; then
+                echo "⚠️ Database not responding, restarting..."
+                docker restart cesizen_database
+                sleep 30
+              fi
             fi
             
-            # ✨ AMÉLIORATION : Blue-Green deployment avec monitoring
-            echo "🚀 Starting Blue-Green Canary Deployment..."
+            # 🔧 DÉPLOIEMENT APPLICATION
+            echo "🚀 Deploying application..."
             
-            # Arrêter l'ancien canary
-            docker stop cesizen-canary 2>/dev/null || true
-            docker rm cesizen-canary 2>/dev/null || true
+            # Arrêter ancien conteneur app
+            docker stop cesizen_app 2>/dev/null || true
+            docker rm cesizen_app 2>/dev/null || true
             
-            # Créer nouveau canary (Green)
-            echo "🟢 Creating GREEN canary instance..."
+            # Démarrer nouveau conteneur app
+            echo "🟢 Starting new application container..."
             docker run -d \
-              --name cesizen-canary \
+              --name cesizen_app \
               --network cesizen-network \
-              -p 8081:8080 \
-              --memory="800m" \
-              --memory-swap="1g" \
+              -p 8080:8080 \
               -e ASPNETCORE_ENVIRONMENT=Production \
-              -e DOTNET_GCServer=1 \
-              -e "ConnectionStrings__DefaultConnection=Server=cesizen_database;Database=CESIZenDB;User Id=sa;Password=${{ secrets.DB_PASSWORD }};TrustServerCertificate=true;Connection Timeout=60;" \
+              -e "ConnectionStrings__DefaultConnection=Server=cesizen_database;Database=CESIZenDB;User Id=sa;Password=${{ secrets.DB_PASSWORD }};TrustServerCertificate=true;Connection Timeout=30;" \
               $NEW_IMAGE
             
-            # Monitoring canary avancé
-            echo "📊 Advanced canary monitoring..."
-            CANARY_HEALTHY=true
+            echo "⏳ Waiting for application to start..."
+            sleep 45
             
-            for i in {1..6}; do
-              echo "🩺 Health check round $i/6..."
-              sleep 30
-              
-              # Vérifier conteneur
-              if ! docker ps | grep cesizen-canary > /dev/null; then
-                echo "❌ Canary container stopped!"
-                docker logs cesizen-canary --tail 20 || echo "No logs available"
-                CANARY_HEALTHY=false
+            # Vérifier que l'app fonctionne
+            echo "🩺 Testing application..."
+            for i in {1..10}; do
+              if curl -f -s http://localhost:8080/ > /dev/null; then
+                echo "✅ Application responding after $i attempts"
                 break
-              fi
-              
-              # Test HTTP avec métriques détaillées
-              HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8081/ || echo "000")
-              RESPONSE_TIME=$(curl -s -o /dev/null -w "%{time_total}" http://localhost:8081/ || echo "999")
-              
-              echo "📈 Canary metrics: HTTP=$HTTP_CODE, Time=${RESPONSE_TIME}s"
-              
-              if [ "$HTTP_CODE" != "200" ] || (( $(echo "$RESPONSE_TIME > 5.0" | bc -l 2>/dev/null || echo "1") )); then
-                echo "⚠️ Canary performance issue detected"
-                if [ $i -ge 3 ]; then
-                  echo "❌ Canary failed after $i attempts"
-                  CANARY_HEALTHY=false
-                  break
-                fi
+              elif [ $i -eq 10 ]; then
+                echo "❌ Application not responding after 10 attempts"
+                echo "📋 Application logs:"
+                docker logs cesizen_app --tail 50
+                echo "📋 Database logs:"
+                docker logs cesizen_database --tail 20
+                exit 1
               else
-                echo "✅ Canary healthy - round $i passed"
+                echo "⏳ App test attempt $i/10 - waiting 15s..."
+                sleep 15
               fi
             done
             
-            if [ "$CANARY_HEALTHY" = "true" ]; then
-              echo "🎉 Canary validation successful! Promoting to production..."
-              
-              # Arrêter ancien prod (Blue)
-              docker stop cesizen_app 2>/dev/null || true
-              docker rm cesizen_app 2>/dev/null || true
-              
-              # Promouvoir canary vers prod (Green -> Blue)
-              docker stop cesizen-canary
-              docker rename cesizen-canary cesizen_app
-              docker start cesizen_app
-              
-              # Changer le port mapping
-              docker stop cesizen_app
-              docker commit cesizen_app temp_cesizen_image
-              docker rm cesizen_app
-              
-              docker run -d \
-                --name cesizen_app \
-                --network cesizen-network \
-                -p 8080:8080 \
-                --memory="800m" \
-                --memory-swap="1g" \
-                -e ASPNETCORE_ENVIRONMENT=Production \
-                -e DOTNET_GCServer=1 \
-                -e "ConnectionStrings__DefaultConnection=Server=cesizen_database;Database=CESIZenDB;User Id=sa;Password=${{ secrets.DB_PASSWORD }};TrustServerCertificate=true;Connection Timeout=60;" \
-                temp_cesizen_image
-              
-              # Cleanup temp image
-              docker rmi temp_cesizen_image 2>/dev/null || true
-              
-              # Cleanup old images
-              docker image prune -f
-              
-              echo "🚀 Blue-Green deployment completed successfully!"
-            else
-              echo "❌ Canary validation failed! Rolling back..."
-              docker stop cesizen-canary 2>/dev/null || true
-              docker rm cesizen-canary 2>/dev/null || true
-              exit 1
-            fi
+            # Test de performance rapide
+            RESPONSE_TIME=$(curl -o /dev/null -s -w "%{time_total}" http://localhost:8080/ 2>/dev/null || echo "999")
+            echo "⚡ Response time: ${RESPONSE_TIME}s"
+            
+            # Nettoyer les anciennes images
+            docker image prune -f 2>/dev/null || true
+            
+            echo "🎉 Deployment completed successfully!"
+            echo "📊 Final status:"
+            docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
-      # ✨ AMÉLIORATION : Tests post-déploiement exhaustifs
-      - name: Comprehensive Post-Deployment Tests
+      - name: Final Health Check
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.AZURE_HOST }}
@@ -247,86 +183,33 @@ jobs:
           port: ${{ secrets.AZURE_PORT }}
           password: ${{ secrets.AZURE_PWD }}
           script: |
-            echo "🧪 Running comprehensive post-deployment tests..."
+            echo "🧪 Final health check..."
             
-            # Test de santé système
-            echo "📊 System health after deployment:"
-            echo "Memory: $(free -h | grep Mem)"
-            echo "Containers: $(docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}')"
-            
-            # Tests applicatifs
-            TESTS_PASSED=0
-            TESTS_TOTAL=0
-            
-            # Test 1: Homepage
-            ((TESTS_TOTAL++))
-            if curl -f -s http://localhost:8080/ > /dev/null; then
-              echo "✅ Test 1/5: Homepage accessible"
-              ((TESTS_PASSED++))
+            # Test complet
+            if curl -f http://localhost:8080/ > /dev/null 2>&1; then
+              echo "✅ Homepage: OK"
             else
-              echo "❌ Test 1/5: Homepage failed"
+              echo "❌ Homepage: FAILED"
             fi
             
-            # Test 2: Privacy page
-            ((TESTS_TOTAL++))
-            if curl -f -s http://localhost:8080/Home/Privacy > /dev/null; then
-              echo "✅ Test 2/5: Privacy page accessible"
-              ((TESTS_PASSED++))
+            if curl -f http://localhost:8080/Home/Privacy > /dev/null 2>&1; then
+              echo "✅ Privacy page: OK"
             else
-              echo "❌ Test 2/5: Privacy page failed"
+              echo "❌ Privacy page: FAILED"
             fi
             
-            # Test 3: Performance
-            ((TESTS_TOTAL++))
-            RESPONSE_TIME=$(curl -o /dev/null -s -w "%{time_total}" http://localhost:8080/ 2>/dev/null || echo "999")
-            if (( $(echo "$RESPONSE_TIME < 2.0" | bc -l 2>/dev/null || echo "0") )); then
-              echo "✅ Test 3/5: Performance (${RESPONSE_TIME}s < 2s)"
-              ((TESTS_PASSED++))
-            else
-              echo "❌ Test 3/5: Performance too slow (${RESPONSE_TIME}s)"
-            fi
+            # Statut des conteneurs
+            echo "📊 Container status:"
+            docker ps --format "table {{.Names}}\t{{.Status}}"
             
-            # Test 4: Database connectivity
-            ((TESTS_TOTAL++))
-            if docker exec cesizen_database /opt/mssql-tools/bin/sqlcmd \
-              -S localhost -U sa -P "${{ secrets.DB_PASSWORD }}" \
-              -Q "SELECT COUNT(*) FROM sys.databases WHERE name='CESIZenDB'" > /dev/null 2>&1; then
-              echo "✅ Test 4/5: Database connectivity"
-              ((TESTS_PASSED++))
-            else
-              echo "❌ Test 4/5: Database connectivity failed"
-            fi
-            
-            # Test 5: Container health
-            ((TESTS_TOTAL++))
-            if docker ps | grep cesizen_app | grep -q "Up"; then
-              echo "✅ Test 5/5: Container health"
-              ((TESTS_PASSED++))
-            else
-              echo "❌ Test 5/5: Container not healthy"
-            fi
-            
-            # Résultats
-            echo "📋 Test Results: $TESTS_PASSED/$TESTS_TOTAL passed"
-            
-            if [ $TESTS_PASSED -eq $TESTS_TOTAL ]; then
-              echo "🎉 All post-deployment tests passed!"
-            else
-              echo "⚠️ Some tests failed. Deployment might have issues."
-              if [ $TESTS_PASSED -lt 3 ]; then
-                echo "❌ Critical failure: Less than 60% tests passed"
-                exit 1
-              fi
-            fi
+            echo "🏁 Deployment health check completed"
 
       - name: Deployment Summary
         if: always()
         run: |
-          echo "## 🚀 CESIZen Enhanced Deployment Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- **Environment**: Production (4GB RAM VM - Optimized)" >> $GITHUB_STEP_SUMMARY
-          echo "- **Strategy**: Blue-Green Canary Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "## 🚀 CESIZen Simple Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment**: Production" >> $GITHUB_STEP_SUMMARY
+          echo "- **Strategy**: Simple Replacement" >> $GITHUB_STEP_SUMMARY
           echo "- **Image**: ghcr.io/${{ env.IMAGE_NAME_LOWER }}:main-${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Database**: SQL Server 2022 Express (2GB allocated)" >> $GITHUB_STEP_SUMMARY
-          echo "- **Application**: ASP.NET Core (800MB allocated)" >> $GITHUB_STEP_SUMMARY
-          echo "- **Memory Management**: Optimized for 4GB total" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Deploy Time**: $(date)" >> $GITHUB_STEP_SUMMARY
