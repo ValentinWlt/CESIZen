@@ -53,7 +53,7 @@ jobs:
           port: ${{ secrets.AZURE_PORT }}
           password: ${{ secrets.AZURE_PWD }}
           source: "./docker-compose.yml"
-          target: "/opt/cesizen/"
+          target: "."
 
       - name: Canary Deployment
         uses: appleboy/ssh-action@v1.0.3
