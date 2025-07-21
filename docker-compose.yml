@@ -4,7 +4,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     user: "0:0"
     environment:
-      SA_PASSWORD: "chaisea3Pieds!"
+      SA_PASSWORD: "${DB_PASSWORD}"
       ACCEPT_EULA: "Y"
       MSSQL_PID: "Express"
       # Optimisations mémoire pour 4GB RAM
