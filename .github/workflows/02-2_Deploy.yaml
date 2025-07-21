@@ -31,16 +31,16 @@ jobs:
       #       BACKUP_FILE="cesizen_backup_$(date +%Y%m%d_%H%M%S).bak"
             
       #       # Vérifier si le conteneur de base de données existe
-      #       if docker ps -a --format "{{.Names}}" | grep -q "r2_database"; then
-      #         docker exec r2_database /opt/mssql-tools/bin/sqlcmd \
+      #       if docker ps -a --format "{{.Names}}" | grep -q "cesizen_database"; then
+      #         docker exec cesizen_database /opt/mssql-tools/bin/sqlcmd \
       #           -S localhost -U sa -P "${{ secrets.DB_PASSWORD }}" \
-      #           -Q "BACKUP DATABASE [RessourcesRelationnelles] TO DISK = '/var/opt/mssql/data/$BACKUP_FILE'" \
+      #           -Q "BACKUP DATABASE [CESIZenDB] TO DISK = '/var/opt/mssql/data/$BACKUP_FILE'" \
       #           || echo "⚠️ Database backup failed, but continuing deployment"
               
       #         echo "✅ Database backup created: $BACKUP_FILE"
               
       #         # Garder seulement les 5 dernières sauvegardes
-      #         docker exec r2_database find /var/opt/mssql/data -name "cesizen_backup_*.bak" -type f -printf '%T@ %p\n' 2>/dev/null | sort -n | head -n -5 | cut -d' ' -f2- | xargs rm -f || true
+      #         docker exec cesizen_database find /var/opt/mssql/data -name "cesizen_backup_*.bak" -type f -printf '%T@ %p\n' 2>/dev/null | sort -n | head -n -5 | cut -d' ' -f2- | xargs rm -f || true
       #       else
       #         echo "⚠️ Database container not found, skipping backup"
       #       fi
@@ -53,7 +53,24 @@ jobs:
           port: ${{ secrets.AZURE_PORT }}
           password: ${{ secrets.AZURE_PWD }}
           source: "./docker-compose.yml"
-          target: "."
+          target: "/opt/cesizen/"
+
+      - name: Setup Environment Variables
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.AZURE_HOST }}
+          username: ${{ secrets.AZURE_LOGIN }}
+          port: ${{ secrets.AZURE_PORT }}
+          password: ${{ secrets.AZURE_PWD }}
+          script: |
+            cd /opt/cesizen
+            
+            # Créer le fichier .env avec le mot de passe de la base de données
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" > .env
+            echo "ASPNETCORE_ENVIRONMENT=Production" >> .env
+            chmod 600 .env
+            
+            echo "✅ Environment variables configured"
 
       - name: Canary Deployment
         uses: appleboy/ssh-action@v1.0.3
@@ -74,14 +91,34 @@ jobs:
             echo "🐳 Pulling new image: $NEW_IMAGE"
             docker pull $NEW_IMAGE
             
-            # Créer le réseau s'il n'existe pas
-            docker network create cesizen-network 2>/dev/null || true
+            # Mettre à jour l'image dans le docker-compose.yml
+            sed -i "s|ghcr.io/valentinwlt/cesizen:latest|$NEW_IMAGE|g" docker-compose.yml
+            
+            # CORRECTION: Nettoyer le réseau existant problématique
+            echo "🧹 Cleaning up existing network..."
+            docker network rm cesizen-network 2>/dev/null || true
+            
+            # Arrêter les anciens conteneurs
+            echo "🛑 Stopping existing containers..."
+            if command -v "docker compose" >/dev/null 2>&1; then
+              docker compose down || true
+            else
+              docker-compose down || true
+            fi
             
             # Déploiement Canary (10% du trafic)
             echo "🚀 Starting canary deployment for CESIZen..."
             
-            # Lancer le conteneur canary sur le port 8081
-            docker compose up -d 
+            # Lancer les services avec docker compose
+            if command -v "docker compose" >/dev/null 2>&1; then
+              docker compose up -d
+            else
+              docker-compose up -d
+            fi
+            
+            # Attendre le démarrage
+            echo "⏳ Waiting for services to start..."
+            sleep 60
             
             # # Test Canary pendant 5 minutes
             # echo "🔍 Testing canary deployment..."
@@ -115,19 +152,42 @@ jobs:
             # echo "🔍 Final health check..."
             # sleep 30
             
-            if curl -f http://localhost:8080/ > /dev/null 2>&1; then
-              echo "✅ Full deployment successful!"
-            else
-              echo "❌ Full deployment failed!"
-              # Essayer de redémarrer avec docker-compose en fallback
-              echo "🔄 Attempting fallback with docker-compose..."
-              docker compose up -d CESIZen || exit 1
-            fi
+            # Test de connectivité final
+            echo "🧪 Testing application connectivity..."
+            for i in {1..6}; do
+              if curl -f http://localhost:8080/ > /dev/null 2>&1; then
+                echo "✅ Full deployment successful!"
+                break
+              fi
+              
+              if [ $i -eq 6 ]; then
+                echo "❌ Full deployment failed!"
+                echo "📋 Debugging information:"
+                echo "Container status:"
+                docker ps --filter "name=cesizen" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+                echo "Application logs:"
+                docker logs cesizen_app --tail=20 || true
+                echo "Database logs:"
+                docker logs cesizen_database --tail=20 || true
+                
+                # CORRECTION: Essayer de redémarrer avec docker-compose en fallback (sans nom de service inexistant)
+                echo "🔄 Attempting fallback restart..."
+                if command -v "docker compose" >/dev/null 2>&1; then
+                  docker compose restart || exit 1
+                else
+                  docker-compose restart || exit 1
+                fi
+                exit 1
+              fi
+              
+              echo "Waiting for app to respond... ($i/6)"
+              sleep 15
+            done
             
             # Nettoyer les anciennes images
             docker image prune -f
             
-            echo "🚀 CESIZen (RessourcesRelationnelles) deployment completed successfully!"
+            echo "🚀 CESIZen deployment completed successfully!"
 
       # - name: Post-Deployment Tests
       #   uses: appleboy/ssh-action@v1.0.3
@@ -171,7 +231,7 @@ jobs:
             
       #       # Test de la base de données (indirect)
       #       echo "Testing database connectivity..."
-      #       if curl -s http://localhost:8080/ | grep -q "RessourcesRelationnelles\|CESIZen\|Ressources" 2>/dev/null; then
+      #       if curl -s http://localhost:8080/ | grep -q "CESIZen\|Cesizen" 2>/dev/null; then
       #         echo "✅ Application seems to be connected to database"
       #       else
       #         echo "⚠️ Cannot verify database connectivity"
@@ -183,7 +243,7 @@ jobs:
         if: always()
         run: |
           echo "## 🚀 CESIZen Deployment Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- **Application**: CESIZen (RessourcesRelationnelles)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Application**: CESIZen (Well-being Management)" >> $GITHUB_STEP_SUMMARY
           echo "- **Environment**: Production (Azure VM)" >> $GITHUB_STEP_SUMMARY
           echo "- **Strategy**: Canary Deployment (10% → 100%)" >> $GITHUB_STEP_SUMMARY
           echo "- **Image**: ghcr.io/${{ env.IMAGE_NAME_LOWER }}:main-${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
