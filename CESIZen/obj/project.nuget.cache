@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "8mLzy1f1Q/k=",
+  "dgSpecHash": "LfUXDop+snI=",
   "success": true,
   "projectFilePath": "C:\\Users\\Valentin Waultier\\Desktop\\Cours\\Bachelor\\Projet Individuel CESIZen\\CESIZen\\CESIZen\\CESIZen.csproj",
   "expectedPackageFiles": [
@@ -166,8 +166,8 @@
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.security.principal.windows\\5.0.0\\system.security.principal.windows.5.0.0.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.text.encoding\\4.3.0\\system.text.encoding.4.3.0.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.text.encoding.codepages\\6.0.0\\system.text.encoding.codepages.6.0.0.nupkg.sha512",
-    "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.text.encodings.web\\7.0.0\\system.text.encodings.web.7.0.0.nupkg.sha512",
-    "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.text.json\\7.0.3\\system.text.json.7.0.3.nupkg.sha512",
+    "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.text.encodings.web\\6.0.0\\system.text.encodings.web.6.0.0.nupkg.sha512",
+    "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.text.json\\8.0.6\\system.text.json.8.0.6.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.threading.channels\\7.0.0\\system.threading.channels.7.0.0.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.threading.tasks.dataflow\\7.0.0\\system.threading.tasks.dataflow.7.0.0.nupkg.sha512",
     "C:\\Users\\Valentin Waultier\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512",
