@@ -103,7 +103,7 @@ jobs:
             if command -v "docker compose" >/dev/null 2>&1; then
               docker compose down || true
             else
-              docker-compose down || true
+              docker compose down || true
             fi
             
             # Déploiement Canary (10% du trafic)
@@ -113,7 +113,7 @@ jobs:
             if command -v "docker compose" >/dev/null 2>&1; then
               docker compose up -d
             else
-              docker-compose up -d
+              docker compose up -d
             fi
             
             # Attendre le démarrage
@@ -175,7 +175,7 @@ jobs:
                 if command -v "docker compose" >/dev/null 2>&1; then
                   docker compose restart || exit 1
                 else
-                  docker-compose restart || exit 1
+                  docker compose restart || exit 1
                 fi
                 exit 1
               fi
