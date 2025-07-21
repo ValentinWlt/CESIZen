@@ -115,10 +115,7 @@ jobs:
             else
               docker compose up -d
             fi
-            
-            # Attendre le démarrage
-            echo "⏳ Waiting for services to start..."
-            sleep 60
+          
             
             # # Test Canary pendant 5 minutes
             # echo "🔍 Testing canary deployment..."
