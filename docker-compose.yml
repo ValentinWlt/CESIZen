@@ -25,7 +25,7 @@ services:
         reservations:
           memory: 1.5G
     healthcheck:
-      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P ${DB_PASSWORD} -Q 'SELECT 1' -No"]
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "SA", "-P", "${DB_PASSWORD}", "-Q", "SELECT 1", "-No"]
       interval: 30s
       timeout: 10s
       retries: 5
