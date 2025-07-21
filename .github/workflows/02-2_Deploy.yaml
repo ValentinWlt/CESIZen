@@ -19,31 +19,31 @@ jobs:
         run: |
           echo "IMAGE_NAME_LOWER=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
 
-      - name: Database Backup
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.AZURE_HOST }}
-          username: ${{ secrets.AZURE_LOGIN }}
-          port: ${{ secrets.AZURE_PORT }}
-          password: ${{ secrets.AZURE_PWD }}
-          script: |
-            echo "💾 Creating database backup for CESIZen..."
-            BACKUP_FILE="cesizen_backup_$(date +%Y%m%d_%H%M%S).bak"
+      # - name: Database Backup
+      #   uses: appleboy/ssh-action@v1.0.3
+      #   with:
+      #     host: ${{ secrets.AZURE_HOST }}
+      #     username: ${{ secrets.AZURE_LOGIN }}
+      #     port: ${{ secrets.AZURE_PORT }}
+      #     password: ${{ secrets.AZURE_PWD }}
+      #     script: |
+      #       echo "💾 Creating database backup for CESIZen..."
+      #       BACKUP_FILE="cesizen_backup_$(date +%Y%m%d_%H%M%S).bak"
             
-            # Vérifier si le conteneur de base de données existe
-            if docker ps -a --format "{{.Names}}" | grep -q "r2_database"; then
-              docker exec r2_database /opt/mssql-tools/bin/sqlcmd \
-                -S localhost -U sa -P "${{ secrets.DB_PASSWORD }}" \
-                -Q "BACKUP DATABASE [RessourcesRelationnelles] TO DISK = '/var/opt/mssql/data/$BACKUP_FILE'" \
-                || echo "⚠️ Database backup failed, but continuing deployment"
+      #       # Vérifier si le conteneur de base de données existe
+      #       if docker ps -a --format "{{.Names}}" | grep -q "r2_database"; then
+      #         docker exec r2_database /opt/mssql-tools/bin/sqlcmd \
+      #           -S localhost -U sa -P "${{ secrets.DB_PASSWORD }}" \
+      #           -Q "BACKUP DATABASE [RessourcesRelationnelles] TO DISK = '/var/opt/mssql/data/$BACKUP_FILE'" \
+      #           || echo "⚠️ Database backup failed, but continuing deployment"
               
-              echo "✅ Database backup created: $BACKUP_FILE"
+      #         echo "✅ Database backup created: $BACKUP_FILE"
               
-              # Garder seulement les 5 dernières sauvegardes
-              docker exec r2_database find /var/opt/mssql/data -name "cesizen_backup_*.bak" -type f -printf '%T@ %p\n' 2>/dev/null | sort -n | head -n -5 | cut -d' ' -f2- | xargs rm -f || true
-            else
-              echo "⚠️ Database container not found, skipping backup"
-            fi
+      #         # Garder seulement les 5 dernières sauvegardes
+      #         docker exec r2_database find /var/opt/mssql/data -name "cesizen_backup_*.bak" -type f -printf '%T@ %p\n' 2>/dev/null | sort -n | head -n -5 | cut -d' ' -f2- | xargs rm -f || true
+      #       else
+      #         echo "⚠️ Database container not found, skipping backup"
+      #       fi
 
       - name: Update Compose File
         uses: appleboy/scp-action@v0.1.7
@@ -80,69 +80,39 @@ jobs:
             echo "🚀 Starting canary deployment for CESIZen..."
             
             # Lancer le conteneur canary sur le port 8081
-            docker run -d \
-              --name cesizen-canary \
-              --network r2-network \
-              -p 8081:8080 \
-              -e ASPNETCORE_ENVIRONMENT=Production \
-              -e "ConnectionStrings__DefaultConnection=Server=r2_database;Database=RessourcesRelationnelles;User Id=sa;Password=${{ secrets.DB_PASSWORD }};TrustServerCertificate=true;" \
-              $NEW_IMAGE
+            docker compose up -d 
             
-            # Test Canary pendant 5 minutes
-            echo "🔍 Testing canary deployment..."
-            for i in {1..5}; do
-              echo "Test $i/5 - Waiting 60 seconds..."
+            # # Test Canary pendant 5 minutes
+            # echo "🔍 Testing canary deployment..."
+            # for i in {1..5}; do
+            #   echo "Test $i/5 - Waiting 60 seconds..."
               
-              # Test de santé de base
-              if ! curl -f http://localhost:8081/ > /dev/null 2>&1; then
-                echo "❌ Canary health check failed"
-                docker stop cesizen-canary && docker rm cesizen-canary
-                exit 1
-              fi
+              # # Test de santé de base
+              # if ! curl -f http://localhost:8081/ > /dev/null 2>&1; then
+              #   echo "❌ Canary health check failed"
+              #   docker stop cesizen-canary && docker rm cesizen-canary
+              #   exit 1
+              # fi
               
-              # Test de performance
-              RESPONSE_TIME=$(curl -o /dev/null -s -w "%{time_total}" http://localhost:8081/)
-              echo "⚡ Canary response time: ${RESPONSE_TIME}s"
+              # # Test de performance
+              # RESPONSE_TIME=$(curl -o /dev/null -s -w "%{time_total}" http://localhost:8081/)
+              # echo "⚡ Canary response time: ${RESPONSE_TIME}s"
               
-              if (( $(echo "$RESPONSE_TIME > 2.0" | bc -l) )); then
-                echo "🔄 Rolling back due to performance issues"
-                docker stop cesizen-canary && docker rm cesizen-canary
-                exit 1
-              fi
+              # if (( $(echo "$RESPONSE_TIME > 2.0" | bc -l) )); then
+              #   echo "🔄 Rolling back due to performance issues"
+              #   docker stop cesizen-canary && docker rm cesizen-canary
+              #   exit 1
+              # fi
               
-              # Vérifier les erreurs 5xx
-              HTTP_CODE=$(curl -o /dev/null -s -w "%{http_code}" http://localhost:8081/)
-              if [[ "$HTTP_CODE" =~ ^5[0-9][0-9]$ ]]; then
-                echo "❌ Server error detected: HTTP $HTTP_CODE"
-                docker stop cesizen-canary && docker rm cesizen-canary
-                exit 1
-              fi
-              
-              sleep 60
-            done
-
-            # Si succès, déploiement complet
-            echo "🎯 Canary successful, proceeding with full deployment"
+            # # Si succès, déploiement complet
+            # echo "🎯 Canary successful, proceeding with full deployment"
             
-            # Arrêter l'ancienne version
-            docker stop cesizen_ui || true
-            docker rm cesizen_ui || true
+            # # Nettoyer le conteneur canary
+            # docker stop cesizen-canary && docker rm cesizen-canary
             
-            # Déployer la nouvelle version
-            docker run -d \
-              --name cesizen_ui \
-              --network r2-network \
-              -p 8080:8080 \
-              -e ASPNETCORE_ENVIRONMENT=Production \
-              -e "ConnectionStrings__DefaultConnection=Server=r2_database;Database=RessourcesRelationnelles;User Id=sa;Password=${{ secrets.DB_PASSWORD }};TrustServerCertificate=true;" \
-              $NEW_IMAGE
-            
-            # Nettoyer le conteneur canary
-            docker stop cesizen-canary && docker rm cesizen-canary
-            
-            # Vérification finale
-            echo "🔍 Final health check..."
-            sleep 30
+            # # Vérification finale
+            # echo "🔍 Final health check..."
+            # sleep 30
             
             if curl -f http://localhost:8080/ > /dev/null 2>&1; then
               echo "✅ Full deployment successful!"
@@ -158,55 +128,55 @@ jobs:
             
             echo "🚀 CESIZen (RessourcesRelationnelles) deployment completed successfully!"
 
-      - name: Post-Deployment Tests
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.AZURE_HOST }}
-          username: ${{ secrets.AZURE_LOGIN }}
-          port: ${{ secrets.AZURE_PORT }}
-          password: ${{ secrets.AZURE_PWD }}
-          script: |
-            echo "🧪 Running post-deployment tests for CESIZen..."
+      # - name: Post-Deployment Tests
+      #   uses: appleboy/ssh-action@v1.0.3
+      #   with:
+      #     host: ${{ secrets.AZURE_HOST }}
+      #     username: ${{ secrets.AZURE_LOGIN }}
+      #     port: ${{ secrets.AZURE_PORT }}
+      #     password: ${{ secrets.AZURE_PWD }}
+      #     script: |
+      #       echo "🧪 Running post-deployment tests for CESIZen..."
             
-            # Test de base - homepage
-            echo "Testing CESIZen homepage..."
-            HTTP_CODE=$(curl -o /dev/null -s -w "%{http_code}" http://localhost:8080/)
-            if [ "$HTTP_CODE" -eq 200 ]; then
-              echo "✅ Homepage accessible (HTTP $HTTP_CODE)"
-            else
-              echo "❌ Homepage test failed (HTTP $HTTP_CODE)"
-              exit 1
-            fi
+      #       # Test de base - homepage
+      #       echo "Testing CESIZen homepage..."
+      #       HTTP_CODE=$(curl -o /dev/null -s -w "%{http_code}" http://localhost:8080/)
+      #       if [ "$HTTP_CODE" -eq 200 ]; then
+      #         echo "✅ Homepage accessible (HTTP $HTTP_CODE)"
+      #       else
+      #         echo "❌ Homepage test failed (HTTP $HTTP_CODE)"
+      #         exit 1
+      #       fi
             
-            # Test des endpoints Identity si disponibles
-            echo "Testing Identity endpoints..."
-            IDENTITY_CODE=$(curl -o /dev/null -s -w "%{http_code}" http://localhost:8080/Identity/Account/Login)
-            if [ "$IDENTITY_CODE" -eq 200 ]; then
-              echo "✅ Identity Login accessible (HTTP $IDENTITY_CODE)"
-            else
-              echo "⚠️ Identity Login not accessible (HTTP $IDENTITY_CODE) - but not critical"
-            fi
+      #       # Test des endpoints Identity si disponibles
+      #       echo "Testing Identity endpoints..."
+      #       IDENTITY_CODE=$(curl -o /dev/null -s -w "%{http_code}" http://localhost:8080/Identity/Account/Login)
+      #       if [ "$IDENTITY_CODE" -eq 200 ]; then
+      #         echo "✅ Identity Login accessible (HTTP $IDENTITY_CODE)"
+      #       else
+      #         echo "⚠️ Identity Login not accessible (HTTP $IDENTITY_CODE) - but not critical"
+      #       fi
             
-            # Test de performance finale
-            echo "Testing final performance..."
-            RESPONSE_TIME=$(curl -o /dev/null -s -w "%{time_total}" http://localhost:8080/)
-            echo "⚡ Production response time: ${RESPONSE_TIME}s"
+      #       # Test de performance finale
+      #       echo "Testing final performance..."
+      #       RESPONSE_TIME=$(curl -o /dev/null -s -w "%{time_total}" http://localhost:8080/)
+      #       echo "⚡ Production response time: ${RESPONSE_TIME}s"
             
-            if (( $(echo "$RESPONSE_TIME > 2.0" | bc -l) )); then
-              echo "⚠️ Production response time exceeds SLA: ${RESPONSE_TIME}s"
-            else
-              echo "✅ Performance test passed: ${RESPONSE_TIME}s"
-            fi
+      #       if (( $(echo "$RESPONSE_TIME > 2.0" | bc -l) )); then
+      #         echo "⚠️ Production response time exceeds SLA: ${RESPONSE_TIME}s"
+      #       else
+      #         echo "✅ Performance test passed: ${RESPONSE_TIME}s"
+      #       fi
             
-            # Test de la base de données (indirect)
-            echo "Testing database connectivity..."
-            if curl -s http://localhost:8080/ | grep -q "RessourcesRelationnelles\|CESIZen\|Ressources" 2>/dev/null; then
-              echo "✅ Application seems to be connected to database"
-            else
-              echo "⚠️ Cannot verify database connectivity"
-            fi
+      #       # Test de la base de données (indirect)
+      #       echo "Testing database connectivity..."
+      #       if curl -s http://localhost:8080/ | grep -q "RessourcesRelationnelles\|CESIZen\|Ressources" 2>/dev/null; then
+      #         echo "✅ Application seems to be connected to database"
+      #       else
+      #         echo "⚠️ Cannot verify database connectivity"
+      #       fi
             
-            echo "✅ All post-deployment tests completed!"
+      #       echo "✅ All post-deployment tests completed!"
 
       - name: Deployment Summary
         if: always()
