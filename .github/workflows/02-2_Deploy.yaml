@@ -53,7 +53,7 @@ jobs:
           port: ${{ secrets.AZURE_PORT }}
           password: ${{ secrets.AZURE_PWD }}
           source: "./docker-compose.yml"
-          target: "."
+          target: "/opt/cesizen/"
 
       - name: Canary Deployment
         uses: appleboy/ssh-action@v1.0.3
@@ -121,7 +121,7 @@ jobs:
               echo "❌ Full deployment failed!"
               # Essayer de redémarrer avec docker-compose en fallback
               echo "🔄 Attempting fallback with docker-compose..."
-              docker compose up -d CESIZen || exit 1
+              docker-compose up -d CESIZen || exit 1
             fi
             
             # Nettoyer les anciennes images
