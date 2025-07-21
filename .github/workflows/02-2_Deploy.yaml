@@ -19,32 +19,6 @@ jobs:
         run: |
           echo "IMAGE_NAME_LOWER=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
 
-      # - name: Database Backup
-      #   uses: appleboy/ssh-action@v1.0.3
-      #   with:
-      #     host: ${{ secrets.AZURE_HOST }}
-      #     username: ${{ secrets.AZURE_LOGIN }}
-      #     port: ${{ secrets.AZURE_PORT }}
-      #     password: ${{ secrets.AZURE_PWD }}
-      #     script: |
-      #       echo "💾 Creating database backup for CESIZen..."
-      #       BACKUP_FILE="cesizen_backup_$(date +%Y%m%d_%H%M%S).bak"
-            
-      #       # Vérifier si le conteneur de base de données existe
-      #       if docker ps -a --format "{{.Names}}" | grep -q "cesizen_database"; then
-      #         docker exec cesizen_database /opt/mssql-tools/bin/sqlcmd \
-      #           -S localhost -U sa -P "${{ secrets.DB_PASSWORD }}" \
-      #           -Q "BACKUP DATABASE [CESIZenDB] TO DISK = '/var/opt/mssql/data/$BACKUP_FILE'" \
-      #           || echo "⚠️ Database backup failed, but continuing deployment"
-              
-      #         echo "✅ Database backup created: $BACKUP_FILE"
-              
-      #         # Garder seulement les 5 dernières sauvegardes
-      #         docker exec cesizen_database find /var/opt/mssql/data -name "cesizen_backup_*.bak" -type f -printf '%T@ %p\n' 2>/dev/null | sort -n | head -n -5 | cut -d' ' -f2- | xargs rm -f || true
-      #       else
-      #         echo "⚠️ Database container not found, skipping backup"
-      #       fi
-
       - name: Update Compose File
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -88,18 +62,18 @@ jobs:
             
             # Pull nouvelle image
             NEW_IMAGE="ghcr.io/${{ env.IMAGE_NAME_LOWER }}:main-${{ github.sha }}"
-            echo "🐳 Pulling new image: $NEW_IMAGE"
+            echo "Pulling new image: $NEW_IMAGE"
             docker pull $NEW_IMAGE
             
             # Mettre à jour l'image dans le docker-compose.yml
             sed -i "s|ghcr.io/valentinwlt/cesizen:latest|$NEW_IMAGE|g" docker-compose.yml
             
             # CORRECTION: Nettoyer le réseau existant problématique
-            echo "🧹 Cleaning up existing network..."
+            echo "Cleaning up existing network..."
             docker network rm cesizen-network 2>/dev/null || true
             
             # Arrêter les anciens conteneurs
-            echo "🛑 Stopping existing containers..."
+            echo "Stopping existing containers..."
             if command -v "docker compose" >/dev/null 2>&1; then
               docker compose down || true
             else
@@ -114,52 +88,20 @@ jobs:
               docker compose up -d
             else
               docker compose up -d
-            fi
+            fi        
           
             
-            # # Test Canary pendant 5 minutes
-            # echo "🔍 Testing canary deployment..."
-            # for i in {1..5}; do
-            #   echo "Test $i/5 - Waiting 60 seconds..."
-              
-              # # Test de santé de base
-              # if ! curl -f http://localhost:8081/ > /dev/null 2>&1; then
-              #   echo "❌ Canary health check failed"
-              #   docker stop cesizen-canary && docker rm cesizen-canary
-              #   exit 1
-              # fi
-              
-              # # Test de performance
-              # RESPONSE_TIME=$(curl -o /dev/null -s -w "%{time_total}" http://localhost:8081/)
-              # echo "⚡ Canary response time: ${RESPONSE_TIME}s"
-              
-              # if (( $(echo "$RESPONSE_TIME > 2.0" | bc -l) )); then
-              #   echo "🔄 Rolling back due to performance issues"
-              #   docker stop cesizen-canary && docker rm cesizen-canary
-              #   exit 1
-              # fi
-              
-            # # Si succès, déploiement complet
-            # echo "🎯 Canary successful, proceeding with full deployment"
-            
-            # # Nettoyer le conteneur canary
-            # docker stop cesizen-canary && docker rm cesizen-canary
-            
-            # # Vérification finale
-            # echo "🔍 Final health check..."
-            # sleep 30
-            
             # Test de connectivité final
-            echo "🧪 Testing application connectivity..."
+            echo "Testing application connectivity..."
             for i in {1..6}; do
               if curl -f http://localhost:8080/ > /dev/null 2>&1; then
-                echo "✅ Full deployment successful!"
+                echo "Full deployment successful!"
                 break
               fi
               
               if [ $i -eq 6 ]; then
-                echo "❌ Full deployment failed!"
-                echo "📋 Debugging information:"
+                echo "Deployment failed!"
+                echo "Debugging information:"
                 echo "Container status:"
                 docker ps --filter "name=cesizen" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
                 echo "Application logs:"
@@ -168,7 +110,7 @@ jobs:
                 docker logs cesizen_database --tail=20 || true
                 
                 # CORRECTION: Essayer de redémarrer avec docker-compose en fallback (sans nom de service inexistant)
-                echo "🔄 Attempting fallback restart..."
+                echo "Attempting fallback restart..."
                 if command -v "docker compose" >/dev/null 2>&1; then
                   docker compose restart || exit 1
                 else
@@ -185,56 +127,6 @@ jobs:
             docker image prune -f
             
             echo "🚀 CESIZen deployment completed successfully!"
-
-      # - name: Post-Deployment Tests
-      #   uses: appleboy/ssh-action@v1.0.3
-      #   with:
-      #     host: ${{ secrets.AZURE_HOST }}
-      #     username: ${{ secrets.AZURE_LOGIN }}
-      #     port: ${{ secrets.AZURE_PORT }}
-      #     password: ${{ secrets.AZURE_PWD }}
-      #     script: |
-      #       echo "🧪 Running post-deployment tests for CESIZen..."
-            
-      #       # Test de base - homepage
-      #       echo "Testing CESIZen homepage..."
-      #       HTTP_CODE=$(curl -o /dev/null -s -w "%{http_code}" http://localhost:8080/)
-      #       if [ "$HTTP_CODE" -eq 200 ]; then
-      #         echo "✅ Homepage accessible (HTTP $HTTP_CODE)"
-      #       else
-      #         echo "❌ Homepage test failed (HTTP $HTTP_CODE)"
-      #         exit 1
-      #       fi
-            
-      #       # Test des endpoints Identity si disponibles
-      #       echo "Testing Identity endpoints..."
-      #       IDENTITY_CODE=$(curl -o /dev/null -s -w "%{http_code}" http://localhost:8080/Identity/Account/Login)
-      #       if [ "$IDENTITY_CODE" -eq 200 ]; then
-      #         echo "✅ Identity Login accessible (HTTP $IDENTITY_CODE)"
-      #       else
-      #         echo "⚠️ Identity Login not accessible (HTTP $IDENTITY_CODE) - but not critical"
-      #       fi
-            
-      #       # Test de performance finale
-      #       echo "Testing final performance..."
-      #       RESPONSE_TIME=$(curl -o /dev/null -s -w "%{time_total}" http://localhost:8080/)
-      #       echo "⚡ Production response time: ${RESPONSE_TIME}s"
-            
-      #       if (( $(echo "$RESPONSE_TIME > 2.0" | bc -l) )); then
-      #         echo "⚠️ Production response time exceeds SLA: ${RESPONSE_TIME}s"
-      #       else
-      #         echo "✅ Performance test passed: ${RESPONSE_TIME}s"
-      #       fi
-            
-      #       # Test de la base de données (indirect)
-      #       echo "Testing database connectivity..."
-      #       if curl -s http://localhost:8080/ | grep -q "CESIZen\|Cesizen" 2>/dev/null; then
-      #         echo "✅ Application seems to be connected to database"
-      #       else
-      #         echo "⚠️ Cannot verify database connectivity"
-      #       fi
-            
-      #       echo "✅ All post-deployment tests completed!"
 
       - name: Deployment Summary
         if: always()
