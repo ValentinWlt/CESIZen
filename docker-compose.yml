@@ -2,6 +2,7 @@ services:
   cesizen-database:
     container_name: cesizen_database
     image: mcr.microsoft.com/mssql/server:2022-latest
+    user: "0:0"
     environment:
       SA_PASSWORD: "${DB_PASSWORD}"
       ACCEPT_EULA: "Y"
