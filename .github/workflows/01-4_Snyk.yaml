@@ -80,13 +80,13 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: --severity-threshold=${{ inputs.severity_threshold || 'high' }} --file=CESIZen.sln --sarif-file-output=snyk.sarif
-        continue-on-error: true 
+        continue-on-error: false 
       - name: Upload Snyk results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
         if: always() && hashFiles('snyk.sarif') != ''
         with:
           sarif_file: snyk.sarif
-        continue-on-error: true
+        continue-on-error: false
 
   snyk-code:
     name: Snyk Code Analysis  
@@ -111,14 +111,14 @@ jobs:
         with:
           command: code test
           args: --severity-threshold=${{ inputs.severity_threshold || 'high' }}
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Upload Snyk Code results
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: snyk-code.sarif
-        continue-on-error: true
+        continue-on-error: false
 
   summary:
     name: Security Analysis Summary
