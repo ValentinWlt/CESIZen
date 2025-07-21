@@ -10,7 +10,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for better analysis
+          fetch-depth: 0  
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -28,7 +28,7 @@ jobs:
         with:
           name: dotnet-coverage-report
           path: ./coverage
-        continue-on-error: true  # Au cas où les tests n'ont pas généré de couverture
+        continue-on-error: true  
 
       - name: Install SonarCloud scanner
         run: |
@@ -44,30 +44,12 @@ jobs:
           SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
         run: |
-          # Vérifier que les tokens existent
-          if [ -z "$SONAR_TOKEN" ]; then
-            echo "❌ SONAR_TOKEN is not set!"
-            echo "ℹ️ Please configure SonarCloud following these steps:"
-            echo "1. Go to https://sonarcloud.io"
-            echo "2. Login with GitHub"
-            echo "3. Create a new project for your repository"
-            echo "4. Go to My Account > Security > Generate Token"
-            echo "5. Add the token as SONAR_TOKEN in GitHub secrets"
-            echo "6. Add your organization key as SONAR_ORGANIZATION"
-            echo "7. Add your project key as SONAR_PROJECT_KEY"
-            exit 1
-          fi
-          
-          # Configuration avec les valeurs exactes de votre SonarCloud
+         
+          # Configuration avec les valeurs de SonarCloud
           ORGANIZATION="${SONAR_ORGANIZATION:-valentinwlt}"
           PROJECT_KEY="${SONAR_PROJECT_KEY:-ValentinWlt_CESIZen}"
           
-          echo "🔍 SonarCloud Configuration:"
-          echo "- Organization: $ORGANIZATION"
-          echo "- Project Key: $PROJECT_KEY"
-          echo "- Host: https://sonarcloud.io"
-          
-          # Configuration adaptée au projet CESIZen
+          # Configuration pour CESIZen
           dotnet sonarscanner begin \
             /k:"$PROJECT_KEY" \
             /o:"$ORGANIZATION" \

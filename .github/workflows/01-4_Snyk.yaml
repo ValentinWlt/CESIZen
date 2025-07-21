@@ -13,7 +13,7 @@ on:
         required: false
         default: 'high'
         type: string
-  # Déclenchement manuel pour tests
+
   workflow_dispatch:
     inputs:
       scan_type:
@@ -37,7 +37,6 @@ on:
           - critical
 
 jobs:
-  # Vérification préalable
   check-snyk-token:
     name: Check Snyk Configuration
     runs-on: ubuntu-latest
@@ -81,8 +80,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: --severity-threshold=${{ inputs.severity_threshold || 'high' }} --file=CESIZen.sln --sarif-file-output=snyk.sarif
-        continue-on-error: true  # Phase de test - ne pas bloquer
-
+        continue-on-error: true 
       - name: Upload Snyk results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
         if: always() && hashFiles('snyk.sarif') != ''
@@ -134,9 +132,8 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           
           if [ "${{ needs.check-snyk-token.outputs.snyk-enabled }}" = "true" ]; then
-            echo "✅ **Snyk Token:** Configured" >> $GITHUB_STEP_SUMMARY
+            echo " **Snyk Token:** Configured" >> $GITHUB_STEP_SUMMARY
             echo "| Scan Type | Status | Details |" >> $GITHUB_STEP_SUMMARY
-            echo "|-----------|---------|---------|" >> $GITHUB_STEP_SUMMARY
             echo "| Dependencies | ${{ needs.snyk-dependencies.result || 'skipped' }} | Vulnerability scan of .NET dependencies |" >> $GITHUB_STEP_SUMMARY
             echo "| Code Analysis | ${{ needs.snyk-code.result || 'skipped' }} | Static analysis of source code |" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
@@ -148,7 +145,7 @@ jobs:
               echo "⚠️ **Some security issues were detected.** Check the Security tab for details." >> $GITHUB_STEP_SUMMARY
             fi
           else
-            echo "❌ **Snyk Token:** Not configured" >> $GITHUB_STEP_SUMMARY
+            echo "**Snyk Token:** Not configured" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "To enable Snyk security scanning:" >> $GITHUB_STEP_SUMMARY
             echo "1. Create a free account at [snyk.io](https://snyk.io)" >> $GITHUB_STEP_SUMMARY
