@@ -21,7 +21,7 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
 
-      - name: 🧪 Run Unit Tests
+      - name: Run Unit Tests
         run: |
           dotnet test CESIZen.Tests/CESIZen.Tests.csproj \
             --configuration Release \
@@ -32,7 +32,7 @@ jobs:
             --results-directory ./coverage \
             --logger "trx;LogFileName=unit-tests.trx"
 
-      - name: 🔗 Run Integration Tests
+      - name: Run Integration Tests
         run: |
           dotnet test CESIZen.Tests/CESIZen.Tests.csproj \
             --configuration Release \
@@ -45,7 +45,7 @@ jobs:
         env:
           ASPNETCORE_ENVIRONMENT: Testing
 
-      - name: 📊 Generate Test Report Summary
+      - name: Generate Test Report Summary
         if: always()
         run: |
           echo "## 🧪 Résultats des Tests CESIZen" >> $GITHUB_STEP_SUMMARY
@@ -78,7 +78,7 @@ jobs:
           echo "- **Tests d'Intégration**: Workflow utilisateur E2E" >> $GITHUB_STEP_SUMMARY
           echo "- **Architecture**: ASP.NET Core 8.0 + Entity Framework + Identity" >> $GITHUB_STEP_SUMMARY
 
-      - name: 📊 Upload Unit Test Results
+      - name: Upload Unit Test Results
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -88,7 +88,7 @@ jobs:
             ./coverage/**/coverage.cobertura.xml
           retention-days: 7
 
-      - name: 🔗 Upload Integration Test Results
+      - name: Upload Integration Test Results
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -98,7 +98,7 @@ jobs:
             ./coverage-integration/**/coverage.cobertura.xml
           retention-days: 7
 
-      - name: 📈 Upload Combined Coverage Report
+      - name: Upload Combined Coverage Report
         uses: actions/upload-artifact@v4
         if: always()
         with:
