@@ -27,118 +27,86 @@ jobs:
             --configuration Release \
             --no-build \
             --verbosity normal \
+            --filter "TestCategory!=Integration" \
             --collect:"XPlat Code Coverage" \
-            --results-directory ./coverage
+            --results-directory ./coverage \
+            --logger "trx;LogFileName=unit-tests.trx"
 
-      - name: Upload Coverage Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: dotnet-coverage-report
-          path: ./coverage
-          retention-days: 3
-
-  TestE2E:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Create docker-compose for tests
+      - name: Run Integration Tests
         run: |
-          cat > docker-compose-test.yaml << 'EOF'
-          services:
-            cesizen-database:
-              container_name: cesizen_database_test
-              image: mcr.microsoft.com/mssql/server:2022-latest
-              user: "0:0"
-              environment:
-                SA_PASSWORD: "CESIZenSecurePass123!"
-                ACCEPT_EULA: "Y"
-                MSSQL_PID: "Express"
-              ports:
-                - "1434:1433"  # Port différent pour éviter les conflits
-              volumes:
-                - cesizen_test_sqldata:/var/opt/mssql/data
-              healthcheck:
-                test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P CESIZenSecurePass123! -Q 'SELECT 1'"]
-                interval: 30s
-                timeout: 10s
-                retries: 5
-              networks:
-                - cesizen-test-network
+          dotnet test CESIZen.Tests/CESIZen.Tests.csproj \
+            --configuration Release \
+            --no-build \
+            --verbosity normal \
+            --filter "TestCategory=Integration|FullyQualifiedName~Integration" \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./coverage-integration \
+            --logger "trx;LogFileName=integration-tests.trx"
+        env:
+          ASPNETCORE_ENVIRONMENT: Testing
 
-          volumes:
-            cesizen_test_sqldata:
-
-          networks:
-            cesizen-test-network:
-              driver: bridge
-          EOF
-
-      - name: Start Database for E2E
+      - name: Generate Test Report Summary
+        if: always()
         run: |
-          docker compose -f docker-compose-test.yaml up -d cesizen-database
-          echo "⏳ Waiting for database to be ready..."
-          sleep 45
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-
-      - name: Build and Run App for E2E
-        run: |
-          # Utiliser une connection string pointant vers le conteneur de test
-          export ConnectionStrings__DefaultConnection="Server=localhost,1434;Database=CESIZenDB;User Id=sa;Password=CESIZenSecurePass123!;TrustServerCertificate=true;"
-          export ASPNETCORE_ENVIRONMENT="Testing"
-          export ASPNETCORE_HTTP_PORTS="5000"
+          echo "## 🧪 Résultats des Tests CESIZen" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
           
-          dotnet build --configuration Release
-          # Lancer l'app en arrière-plan
-          dotnet run --project CESIZen/CESIZen.csproj --configuration Release --urls "http://localhost:5000" &
-          APP_PID=$!
-          echo "APP_PID=$APP_PID" >> $GITHUB_ENV
-          
-          # Attendre que l'app soit prête
-          echo "⏳ Waiting for app to start..."
-          for i in {1..30}; do
-            if curl -s http://localhost:5000/health > /dev/null 2>&1; then
-              echo "✅ App is ready!"
-              break
-            fi
-            if [ $i -eq 30 ]; then
-              echo "❌ App failed to start in time"
-              exit 1
-            fi
-            sleep 2
-          done
-
-      - name: Run E2E Tests
-        run: |
-          echo "🧪 Running E2E tests..."
-                    
-          # Test homepage
-          echo "Testing homepage..."
-          curl -f http://localhost:5000/ || (echo "❌ Homepage test failed" && exit 1)
-          
-          # Test response time
-          echo "Testing response time..."
-          RESPONSE_TIME=$(curl -o /dev/null -s -w "%{time_total}" http://localhost:5000/)
-          echo "Response time: ${RESPONSE_TIME}s"
-          
-          # Vérifier que le temps de réponse est acceptable (< 5 secondes pour les tests)
-          if (( $(echo "$RESPONSE_TIME > 5.0" | bc -l) )); then
-            echo "⚠️ Response time is slow but acceptable for tests: ${RESPONSE_TIME}s"
+          # Tests unitaires
+          if [ -f "./coverage/unit-tests.trx" ]; then
+            echo "### ✅ Tests Unitaires" >> $GITHUB_STEP_SUMMARY
+            echo "- **Statut**: Exécutés" >> $GITHUB_STEP_SUMMARY
+            echo "- **Portée**: Tests isolés des contrôleurs et services" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ❌ Tests Unitaires" >> $GITHUB_STEP_SUMMARY
+            echo "- **Statut**: Échec ou non trouvés" >> $GITHUB_STEP_SUMMARY
           fi
           
-          # Test des endpoints spécifiques à CESIZen
-          echo "Testing CESIZen specific endpoints..."
-          curl -f http://localhost:5000/Home/Privacy || (echo "❌ Privacy page test failed" && exit 1)
+          # Tests d'intégration
+          if [ -f "./coverage-integration/integration-tests.trx" ]; then
+            echo "### ✅ Tests d'Intégration" >> $GITHUB_STEP_SUMMARY
+            echo "- **Statut**: Exécutés" >> $GITHUB_STEP_SUMMARY
+            echo "- **Portée**: Workflow utilisateur complet (Register→Login→Questionnaire→Submit)" >> $GITHUB_STEP_SUMMARY
+            echo "- **Infrastructure**: WebApplicationFactory + InMemoryDatabase" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ❌ Tests d'Intégration" >> $GITHUB_STEP_SUMMARY
+            echo "- **Statut**: Échec ou non trouvés" >> $GITHUB_STEP_SUMMARY
+          fi
           
-          # Test d'un endpoint d'évaluation de stress si disponible
-          curl -s http://localhost:5000/StressEvaluation > /dev/null || echo "⚠️ StressEvaluation endpoint not available"
-          
-          echo "✅ All E2E tests passed!"
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🎯 Couverture de Tests" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tests Unitaires**: Contrôleurs individuels" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tests d'Intégration**: Workflow utilisateur E2E" >> $GITHUB_STEP_SUMMARY
+          echo "- **Architecture**: ASP.NET Core 8.0 + Entity Framework + Identity" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Unit Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-test-results
+          path: |
+            ./coverage/*.trx
+            ./coverage/**/coverage.cobertura.xml
+          retention-days: 7
+
+      - name: Upload Integration Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: integration-test-results
+          path: |
+            ./coverage-integration/*.trx
+            ./coverage-integration/**/coverage.cobertura.xml
+          retention-days: 7
+
+      - name: Upload Combined Coverage Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dotnet-coverage-report
+          path: |
+            ./coverage
+            ./coverage-integration
+          retention-days: 3
 
       - name: Stop Application
         if: always()

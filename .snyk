@@ -6,16 +6,13 @@ ignore: {}
 # patches apply the minimum changes required to fix a vulnerability
 patch: {}
 
-# Configuration pour .NET
 language-settings:
   dotnet:
     targetFramework: net8.0
     nugetConfigPath: nuget.config
     
-# Seuils de sévérité
 severity-threshold: medium
 
-# Exclusions (optionnel)
 exclude:
   global:
     - "bin/**"

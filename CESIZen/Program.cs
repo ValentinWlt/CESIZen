@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using CesiZen.Data;
 using Microsoft.AspNetCore.Identity;
-using CESIZen.Models; // Ajoutez le namespace de votre modèle Utilisateur
+using CESIZen.Models; // Ajoutez le namespace de votre modï¿½le Utilisateur
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +12,7 @@ builder.Services.AddDbContext<CesiZenDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Configurer Identity avec Utilisateur personnalisé
+// Configurer Identity avec Utilisateur personnalisï¿½
 builder.Services.AddIdentity<Utilisateur, IdentityRole<int>>(options => {
     options.Password.RequiredLength = 4;
     options.Password.RequireDigit = false;
@@ -47,14 +47,14 @@ using (var scope = app.Services.CreateScope())
         // OU appliquer les migrations automatiquement
         // await context.Database.MigrateAsync();
 
-        // Log de succès
+        // Log de succï¿½s
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogInformation("Base de données initialisée avec succès");
+        logger.LogInformation("Base de donnï¿½es initialisï¿½e avec succï¿½s");
     }
     catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Une erreur s'est produite lors de l'initialisation de la base de données");
+        logger.LogError(ex, "Une erreur s'est produite lors de l'initialisation de la base de donnï¿½es");
 
         // En production, vous pourriez vouloir relancer l'exception
         // throw;
@@ -87,14 +87,14 @@ app.MapControllerRoute(
 
 
 
-// Initialisation des rôles et utilisateurs
+// Initialisation des rï¿½les et utilisateurs
 using (var scope = app.Services.CreateScope())
 {
     var serviceProvider = scope.ServiceProvider;
     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
     var userManager = serviceProvider.GetRequiredService<UserManager<Utilisateur>>();
 
-    // Créer les rôles
+    // Crï¿½er les rï¿½les
     string[] roleNames = { "Admin", "User" };
 
     foreach (var roleName in roleNames)
@@ -107,3 +107,5 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+public partial class Program { }
