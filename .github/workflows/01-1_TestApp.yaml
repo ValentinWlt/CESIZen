@@ -21,34 +21,92 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
 
-      - name: Run Unit Tests
+      - name: 🧪 Run Unit Tests
         run: |
           dotnet test CESIZen.Tests/CESIZen.Tests.csproj \
             --configuration Release \
             --no-build \
             --verbosity normal \
+            --filter "TestCategory!=Integration" \
             --collect:"XPlat Code Coverage" \
-            --results-directory ./coverage
+            --results-directory ./coverage \
+            --logger "trx;LogFileName=unit-tests.trx"
 
-      - name: 📊 Upload Test Results
+      - name: 🔗 Run Integration Tests
+        run: |
+          dotnet test CESIZen.Tests/CESIZen.Tests.csproj \
+            --configuration Release \
+            --no-build \
+            --verbosity normal \
+            --filter "TestCategory=Integration|FullyQualifiedName~Integration" \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./coverage-integration \
+            --logger "trx;LogFileName=integration-tests.trx"
+        env:
+          ASPNETCORE_ENVIRONMENT: Testing
+
+      - name: 📊 Generate Test Report Summary
+        if: always()
+        run: |
+          echo "## 🧪 Résultats des Tests CESIZen" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Tests unitaires
+          if [ -f "./coverage/unit-tests.trx" ]; then
+            echo "### ✅ Tests Unitaires" >> $GITHUB_STEP_SUMMARY
+            echo "- **Statut**: Exécutés" >> $GITHUB_STEP_SUMMARY
+            echo "- **Portée**: Tests isolés des contrôleurs et services" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ❌ Tests Unitaires" >> $GITHUB_STEP_SUMMARY
+            echo "- **Statut**: Échec ou non trouvés" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Tests d'intégration
+          if [ -f "./coverage-integration/integration-tests.trx" ]; then
+            echo "### ✅ Tests d'Intégration" >> $GITHUB_STEP_SUMMARY
+            echo "- **Statut**: Exécutés" >> $GITHUB_STEP_SUMMARY
+            echo "- **Portée**: Workflow utilisateur complet (Register→Login→Questionnaire→Submit)" >> $GITHUB_STEP_SUMMARY
+            echo "- **Infrastructure**: WebApplicationFactory + InMemoryDatabase" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ❌ Tests d'Intégration" >> $GITHUB_STEP_SUMMARY
+            echo "- **Statut**: Échec ou non trouvés" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🎯 Couverture de Tests" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tests Unitaires**: Contrôleurs individuels" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tests d'Intégration**: Workflow utilisateur E2E" >> $GITHUB_STEP_SUMMARY
+          echo "- **Architecture**: ASP.NET Core 8.0 + Entity Framework + Identity" >> $GITHUB_STEP_SUMMARY
+
+      - name: 📊 Upload Unit Test Results
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results
-          path: ./test-results
-          retention-days: 7  
+          name: unit-test-results
+          path: |
+            ./coverage/*.trx
+            ./coverage/**/coverage.cobertura.xml
+          retention-days: 7
 
-      - name: Upload Coverage Report
+      - name: 🔗 Upload Integration Test Results
         uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: integration-test-results
+          path: |
+            ./coverage-integration/*.trx
+            ./coverage-integration/**/coverage.cobertura.xml
+          retention-days: 7
+
+      - name: 📈 Upload Combined Coverage Report
+        uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: dotnet-coverage-report
-          path: ./coverage
+          path: |
+            ./coverage
+            ./coverage-integration
           retention-days: 3
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
 
       - name: Stop Application
         if: always()
