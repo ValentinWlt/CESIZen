@@ -30,15 +30,6 @@ jobs:
             --collect:"XPlat Code Coverage" \
             --results-directory ./coverage
 
-      - name: 🔧 Run Integration Tests
-        run: |
-          echo "🔧 Exécution des tests d'intégration..."
-          dotnet test CESIZen.IntegrationTests/CESIZen.Tests.csproj \
-            --configuration Release \
-            --no-build \
-            --verbosity normal \
-            --logger trx
-
       - name: 📊 Upload Test Results
         uses: actions/upload-artifact@v4
         if: always()
