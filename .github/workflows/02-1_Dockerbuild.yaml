@@ -4,7 +4,7 @@ on:
   workflow_call:
     secrets:
       SNYK_TOKEN:
-        required: false  # Optionnel pour permettre une migration progressive
+        required: false  
 
 env:
   REGISTRY: ghcr.io
@@ -18,7 +18,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ✅ CORRECTION : Configuration des variables d'environnement pour les secrets
       - name: Configure Environment Variables
         run: |
           # Configurer SNYK_TOKEN comme variable d'environnement si disponible
