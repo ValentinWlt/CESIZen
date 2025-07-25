@@ -42,3 +42,13 @@
         </div>
     </div>
 </div>
+
+@code {
+internal static bool IsEven(int number)
+{
+    var temp = number; // Variable inutile
+    var zero = 0;
+    var division = temp / zero; // Division par zéro - BUG critique
+    return number % 2 == 0;
+}
+}
