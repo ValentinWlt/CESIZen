@@ -13,18 +13,31 @@ public class HomeController : Controller
         _logger = logger;
     }
 
-     public IActionResult Index()
+        public IActionResult Index()
         {
-            try
+            // ❌ ERREURS VOLONTAIRES POUR SONARCLOUD (à ajouter dans votre méthode existante)
+            
+            // Erreur 1: Variable non utilisée (Code Smell)
+            var unusedVariable = "Cette variable ne sert à rien";
+            
+            // Erreur 2: Division par zéro (Bug Critique)
+            var testNumber = 42;
+            var zero = 0;
+            
+            try 
             {
-                var testNumber = 42;
-                var result = MathHelper.IsEven(testNumber); 
-                ViewBag.MathTestResult = $"Le nombre {testNumber} est {(result ? "pair" : "impair")}";
+                var result = testNumber / zero; // Division par zéro - SonarCloud va détecter ça !
+                ViewBag.TestResult = $"Résultat: {result}";
             }
             catch (Exception ex)
             {
-                ViewBag.MathTestResult = $"❌ Erreur détectée: {ex.Message}";
-                _logger.LogError(ex, "Erreur lors du test de la méthode IsEven pour SonarCloud");
+                ViewBag.TestResult = $"Erreur capturée: {ex.Message}";
+            }
+            
+            // Erreur 3: Code jamais atteint (Code Smell)
+            if (false)
+            {
+                Console.WriteLine("Ce code ne s'exécutera jamais");
             }
 
             return View();
