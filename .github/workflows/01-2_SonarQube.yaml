@@ -79,24 +79,40 @@ jobs:
         SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
         SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
       run: |
-        # Configuration avec les valeurs de SonarCloud pour CESIZen
-        ORGANIZATION="${SONAR_ORGANIZATION:-valentinwlt}"
-        PROJECT_KEY="${SONAR_PROJECT_KEY:-ValentinWlt_CESIZen}"
+        # Configuration avec les valeurs par défaut pour CESIZen
+        if [ -z "$SONAR_ORGANIZATION" ]; then
+          ORGANIZATION="valentinwlt"
+        else
+          ORGANIZATION="$SONAR_ORGANIZATION"
+        fi
+        
+        if [ -z "$SONAR_PROJECT_KEY" ]; then
+          PROJECT_KEY="ValentinWlt_CESIZen"
+        else
+          PROJECT_KEY="$SONAR_PROJECT_KEY"
+        fi
         
         echo "🔍 Starting SonarCloud analysis for CESIZen"
         echo "Organization: $ORGANIZATION"
         echo "Project Key: $PROJECT_KEY"
+        echo "Token length: ${#SONAR_TOKEN}"
+        
+        # Vérification des paramètres requis
+        if [ -z "$SONAR_TOKEN" ]; then
+          echo "❌ SONAR_TOKEN is missing"
+          exit 1
+        fi
         
         dotnet sonarscanner begin \
           /k:"$PROJECT_KEY" \
           /o:"$ORGANIZATION" \
-          /d:sonar.token="${SONAR_TOKEN}" \
+          /d:sonar.token="$SONAR_TOKEN" \
           /d:sonar.host.url="https://sonarcloud.io" \
-          /d:sonar.projectBaseDir="${GITHUB_WORKSPACE}" \
+          /d:sonar.projectBaseDir="$GITHUB_WORKSPACE" \
           /d:sonar.sources="." \
           /d:sonar.exclusions="**/bin/**,**/obj/**,**/Migrations/**,**/wwwroot/**,**/*.js,**/*.css,**/TestResults/**,**/coverage/**" \
           /d:sonar.tests="." \
-          /d:sonar.test.inclusions="**/*Tests.cs,**/*Test.cs,**/CESIZen.Tests/**/*.cs" \  
+          /d:sonar.test.inclusions="**/*Tests.cs,**/*Test.cs,**/CESIZen.Tests/**/*.cs" \
           /d:sonar.test.exclusions="**/bin/**,**/obj/**" \
           /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" \
           /d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx" \
