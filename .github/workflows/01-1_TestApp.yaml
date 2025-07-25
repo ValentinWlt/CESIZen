@@ -27,10 +27,9 @@ jobs:
             --configuration Release \
             --no-build \
             --verbosity normal \
-            --filter "TestCategory!=Integration" \
             --collect:"XPlat Code Coverage" \
             --results-directory ./coverage \
-            --logger "trx;LogFileName=unit-tests.trx"
+            -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover \
 
       - name: Run Integration Tests
         run: |
