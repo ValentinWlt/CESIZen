@@ -5,61 +5,163 @@ on:
 
 jobs:
   QualityDotNet:
+    name: SonarCloud Analysis with Coverage
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Nécessaire pour SonarCloud
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
 
-      - name: Setup Java (required for SonarCloud)
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+    - name: Setup Java (required for SonarCloud)
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
 
-      - name: Download Coverage Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dotnet-coverage-report
-          path: ./coverage
-        continue-on-error: true  
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
 
-      - name: Install SonarCloud scanner
-        run: |
-          dotnet tool install --global dotnet-sonarscanner
+    - name: Install SonarCloud scanner
+      run: dotnet tool install --global dotnet-sonarscanner
 
-      - name: Restore dependencies
-        run: dotnet restore
+    - name: Detect CESIZen project structure
+      id: detect
+      run: |
+        echo "=== Detecting CESIZen project structure ==="
+        
+        # Chercher les fichiers de solution
+        if [ -f "CESIZen.sln" ]; then
+          echo "main_file=CESIZen.sln" >> $GITHUB_OUTPUT
+          echo "✅ Using CESIZen.sln"
+        else
+          # Chercher d'autres fichiers .sln
+          SLN_FILES=$(find . -maxdepth 2 -name "*.sln")
+          if [ $(echo "$SLN_FILES" | wc -l) -eq 1 ] && [ -n "$SLN_FILES" ]; then
+            MAIN_SLN=$(echo "$SLN_FILES" | head -1)
+            echo "main_file=$MAIN_SLN" >> $GITHUB_OUTPUT
+            echo "✅ Using solution file: $MAIN_SLN"
+          else
+            echo "main_file=" >> $GITHUB_OUTPUT
+            echo "⚠️ No single solution file found, will build individual projects"
+          fi
+        fi
+        
+        # Détecter les projets de test
+        TEST_PROJECTS=$(find . -name "*Tests*.csproj" -o -name "*.Tests.csproj" | grep -v "/bin/" | grep -v "/obj/")
+        echo "Test projects found:"
+        echo "$TEST_PROJECTS"
 
-      - name: Build and analyze
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
-          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
-        run: |
-         
-          # Configuration avec les valeurs de SonarCloud
-          ORGANIZATION="${SONAR_ORGANIZATION:-valentinwlt}"
-          PROJECT_KEY="${SONAR_PROJECT_KEY:-ValentinWlt_CESIZen}"
+    - name: Restore dependencies
+      run: |
+        if [ -n "${{ steps.detect.outputs.main_file }}" ]; then
+          echo "Restoring solution: ${{ steps.detect.outputs.main_file }}"
+          dotnet restore "${{ steps.detect.outputs.main_file }}"
+        else
+          echo "Restoring CESIZen project:"
+          dotnet restore
+        fi
+
+    - name: Begin SonarCloud analysis
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
+        SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+      run: |
+        # Configuration avec les valeurs de SonarCloud pour CESIZen
+        ORGANIZATION="${SONAR_ORGANIZATION:-valentinwlt}"
+        PROJECT_KEY="${SONAR_PROJECT_KEY:-ValentinWlt_CESIZen}"
+        
+        echo "🔍 Starting SonarCloud analysis for CESIZen"
+        echo "Organization: $ORGANIZATION"
+        echo "Project Key: $PROJECT_KEY"
+        
+        dotnet sonarscanner begin \
+          /k:"$PROJECT_KEY" \
+          /o:"$ORGANIZATION" \
+          /d:sonar.token="${SONAR_TOKEN}" \
+          /d:sonar.host.url="https://sonarcloud.io" \
+          /d:sonar.projectBaseDir="${GITHUB_WORKSPACE}" \
+          /d:sonar.sources="." \
+          /d:sonar.exclusions="**/bin/**,**/obj/**,**/Migrations/**,**/wwwroot/**,**/*.js,**/*.css,**/TestResults/**,**/coverage/**" \
+          /d:sonar.tests="." \
+          /d:sonar.test.inclusions="**/*Tests.cs,**/*Test.cs,**/CESIZen.Tests/**/*.cs" \  
+          /d:sonar.test.exclusions="**/bin/**,**/obj/**" \
+          /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" \
+          /d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx" \
+          /d:sonar.coverage.exclusions="**/Migrations/**,**/Program.cs,**/Startup.cs,**/wwwroot/**,**/Tests/**" \
+          /d:sonar.scanner.skipJreProvisioning=false
+
+    - name: Build CESIZen solution
+      run: |
+        if [ -n "${{ steps.detect.outputs.main_file }}" ]; then
+          echo "Building solution: ${{ steps.detect.outputs.main_file }}"
+          dotnet build "${{ steps.detect.outputs.main_file }}" --no-restore --configuration Release
+        else
+          echo "Building CESIZen projects:"
+          dotnet build --no-restore --configuration Release
+        fi
+
+    - name: Run tests with coverage for CESIZen
+      run: |
+        # Chercher spécifiquement les projets de test CESIZen
+        TEST_PROJECTS=$(find . -name "CESIZen.Tests*.csproj" -o -name "*Tests*.csproj" | grep -v "/bin/" | grep -v "/obj/")
+        
+        if [ -z "$TEST_PROJECTS" ]; then
+          echo "❌ No test projects found for CESIZen"
+          echo "Expected: CESIZen.Tests/CESIZen.Tests.csproj"
+          find . -name "*.csproj" | head -10
+        else
+          echo "✅ Test projects found for CESIZen:"
+          echo "$TEST_PROJECTS"
           
-          # Configuration pour CESIZen
-          dotnet sonarscanner begin \
-            /k:"$PROJECT_KEY" \
-            /o:"$ORGANIZATION" \
-            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
-            /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.cs.opencover.reportsPaths="coverage/**/coverage.opencover.xml" \
-            /d:sonar.exclusions="**/bin/**,**/obj/**,**/*.js,**/*.css,**/wwwroot/lib/**" \
-            /d:sonar.coverage.exclusions="**/Program.cs,**/Startup.cs,**/Migrations/**,**/Tests/**" \
-            /d:sonar.scanner.skipJreProvisioning=false
+          # Créer le dossier TestResults
+          mkdir -p ./TestResults
           
-          dotnet build --configuration Release --no-restore
+          # Exécuter les tests pour chaque projet de test avec couverture OpenCover
+          for test_project in $TEST_PROJECTS; do
+            echo "🧪 Running tests for: $test_project"
+            PROJECT_NAME=$(basename "$test_project" .csproj)
+            
+            dotnet test "$test_project" \
+              --no-build \
+              --configuration Release \
+              --logger "trx;LogFileName=${PROJECT_NAME}.trx" \
+              --collect:"XPlat Code Coverage" \
+              --results-directory ./TestResults/ \
+              -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+          done
           
-          dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          echo "📊 Coverage reports generated:"
+          find ./TestResults -name "*.xml" -o -name "*.trx" | head -10
+          
+          # Afficher le contenu des rapports pour debug
+          echo "🔍 Coverage files details:"
+          find ./TestResults -name "*coverage*" -type f -exec ls -la {} \;
+        fi
+
+    - name: End SonarCloud analysis
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: |
+        echo "🏁 Finalizing SonarCloud analysis"
+        dotnet sonarscanner end /d:sonar.token="${SONAR_TOKEN}"
+
+    - name: Upload Test Results (for debugging)
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: cesizen-test-results
+        path: ./TestResults
+        retention-days: 7
