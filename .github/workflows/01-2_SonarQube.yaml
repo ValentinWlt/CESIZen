@@ -1,4 +1,4 @@
-name: 01 - SonarQube Analysis
+name: 01-2 - Integration SonarQube
 
 on:
   workflow_call
@@ -14,10 +14,17 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Setup .NET 9
+    # ✅ CORRECTION : Utiliser .NET 8.0.x pour correspondre au projet CESIZen
+    - name: Setup .NET 8
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '9.0.x'
+        dotnet-version: '8.0.x'
+
+    - name: Setup Java (required for SonarCloud)
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
 
     - name: Cache SonarCloud packages
       uses: actions/cache@v4
@@ -36,28 +43,32 @@ jobs:
           rm sonar-project.properties
         fi
 
-    - name: Detect project structure
+    - name: Detect CESIZen project structure
       id: detect
       run: |
-        echo "=== Detecting project structure ==="
+        echo "=== Detecting CESIZen project structure ==="
         
-        # Chercher les fichiers .sln
+        # Chercher spécifiquement les fichiers de CESIZen
         SLN_FILES=$(find . -maxdepth 2 -name "*.sln")
         echo "Solution files found:"
         echo "$SLN_FILES"
         
-        # Déterminer le fichier principal à utiliser
-        if [ -f "ReRe.sln" ]; then
-          echo "main_file=ReRe.sln" >> $GITHUB_OUTPUT
-          echo "Using ReRe.sln"
+        # Déterminer le fichier principal à utiliser pour CESIZen
+        if [ -f "CESIZen.sln" ]; then
+          echo "main_file=CESIZen.sln" >> $GITHUB_OUTPUT
+          echo "✅ Using CESIZen.sln"
         elif [ $(echo "$SLN_FILES" | wc -l) -eq 1 ] && [ -n "$SLN_FILES" ]; then
           MAIN_SLN=$(echo "$SLN_FILES" | head -1)
           echo "main_file=$MAIN_SLN" >> $GITHUB_OUTPUT
-          echo "Using solution file: $MAIN_SLN"
+          echo "✅ Using solution file: $MAIN_SLN"
         else
           echo "main_file=" >> $GITHUB_OUTPUT
-          echo "Multiple or no solution files found"
+          echo "⚠️ Multiple or no solution files found, will build individual projects"
         fi
+        
+        # Vérifier les projets de test CESIZen
+        echo "=== CESIZen Test Projects ==="
+        find . -name "*Tests*.csproj" -o -name "*.Tests.csproj" | grep -v "/bin/" | grep -v "/obj/"
 
     - name: Restore dependencies
       run: |
@@ -65,49 +76,77 @@ jobs:
           echo "Restoring solution: ${{ steps.detect.outputs.main_file }}"
           dotnet restore "${{ steps.detect.outputs.main_file }}"
         else
-          echo "Restoring individual projects:"
-          find . -name "*.csproj" -exec dotnet restore {} \;
+          echo "Restoring CESIZen projects individually:"
+          dotnet restore
         fi
 
     - name: Begin SonarCloud analysis
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
+        SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
       run: |
+        # ✅ CORRECTION : Configuration pour CESIZen (pas ReRe)
+        if [ -z "$SONAR_ORGANIZATION" ]; then
+          ORGANIZATION="valentinwlt"
+        else
+          ORGANIZATION="$SONAR_ORGANIZATION"
+        fi
+        
+        if [ -z "$SONAR_PROJECT_KEY" ]; then
+          PROJECT_KEY="ValentinWlt_CESIZen"
+        else
+          PROJECT_KEY="$SONAR_PROJECT_KEY"
+        fi
+        
+        echo "🔍 Starting SonarCloud analysis for CESIZen"
+        echo "Organization: $ORGANIZATION"
+        echo "Project Key: $PROJECT_KEY"
+        
+        # Vérification du token
+        if [ -z "$SONAR_TOKEN" ]; then
+          echo "❌ SONAR_TOKEN is missing"
+          exit 1
+        fi
+        
         dotnet sonarscanner begin \
-          /k:"Ohme5083_ReRe" \
-          /o:"ohme5083" \
-          /d:sonar.token="${SONAR_TOKEN}" \
+          /k:"$PROJECT_KEY" \
+          /o:"$ORGANIZATION" \
+          /d:sonar.token="$SONAR_TOKEN" \
           /d:sonar.host.url="https://sonarcloud.io" \
-          /d:sonar.projectBaseDir="${GITHUB_WORKSPACE}" \
+          /d:sonar.projectBaseDir="$GITHUB_WORKSPACE" \
           /d:sonar.sources="." \
-          /d:sonar.exclusions="**/bin/**,**/obj/**,**/Migrations/**,**/wwwroot/**,**/*.js,**/*.css,**/TestResults/**" \
+          /d:sonar.exclusions="**/bin/**,**/obj/**,**/Migrations/**,**/wwwroot/**,**/*.js,**/*.css,**/TestResults/**,**/coverage/**" \
           /d:sonar.tests="." \
-          /d:sonar.test.inclusions="**/*Tests.cs,**/*Test.cs" \
+          /d:sonar.test.inclusions="**/*Tests.cs,**/*Test.cs,**/CESIZen.Tests/**/*.cs" \
           /d:sonar.test.exclusions="**/bin/**,**/obj/**" \
           /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" \
           /d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx" \
-          /d:sonar.coverage.exclusions="**/Migrations/**,**/Program.cs,**/wwwroot/**"
+          /d:sonar.coverage.exclusions="**/Migrations/**,**/Program.cs,**/Startup.cs,**/wwwroot/**,**/Tests/**"
 
-    - name: Build solution
+    - name: Build CESIZen solution
       run: |
         if [ -n "${{ steps.detect.outputs.main_file }}" ]; then
           echo "Building solution: ${{ steps.detect.outputs.main_file }}"
           dotnet build "${{ steps.detect.outputs.main_file }}" --no-restore --configuration Release
         else
-          echo "Building individual projects:"
+          echo "Building CESIZen projects individually:"
           find . -name "*.csproj" -not -path "*/bin/*" -not -path "*/obj/*" -exec dotnet build {} --no-restore --configuration Release \;
         fi
 
-    - name: Run tests with coverage
+    - name: Run CESIZen tests with coverage
       run: |
-        # Chercher les projets de test
-        TEST_PROJECTS=$(find . -name "*Tests*.csproj" -o -name "*.Tests.csproj" -o -name "*Test*.csproj" | grep -v "/bin/" | grep -v "/obj/")
+        # ✅ CORRECTION : Chercher spécifiquement les projets de test CESIZen
+        TEST_PROJECTS=$(find . -name "CESIZen.Tests*.csproj" -o -name "*Tests*.csproj" -o -name "*.Tests.csproj" | grep -v "/bin/" | grep -v "/obj/")
         
         if [ -z "$TEST_PROJECTS" ]; then
-          echo "No test projects found"
+          echo "❌ No test projects found for CESIZen"
+          echo "Expected: CESIZen.Tests/CESIZen.Tests.csproj"
+          echo "Available projects:"
+          find . -name "*.csproj" | head -10
         else
-          echo "Test projects found:"
+          echo "✅ CESIZen test projects found:"
           echo "$TEST_PROJECTS"
           
           # Créer le dossier TestResults
@@ -115,21 +154,37 @@ jobs:
           
           # Exécuter les tests pour chaque projet de test
           for test_project in $TEST_PROJECTS; do
-            echo "Running tests for: $test_project"
+            echo "🧪 Running tests for: $test_project"
+            PROJECT_NAME=$(basename "$test_project" .csproj)
+            
             dotnet test "$test_project" \
               --no-build \
               --configuration Release \
-              --logger "trx;LogFileName=$(basename $test_project .csproj).trx" \
+              --logger "trx;LogFileName=${PROJECT_NAME}.trx" \
               --collect:"XPlat Code Coverage" \
               --results-directory ./TestResults/ \
               -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
           done
           
-          echo "=== Test Results ==="
+          echo "📊 CESIZen Test Results Generated:"
           find ./TestResults -name "*.xml" -o -name "*.trx" | head -10
+          
+          # Debug des fichiers de couverture
+          echo "🔍 Coverage files details:"
+          find ./TestResults -name "*coverage*" -type f -exec ls -la {} \;
         fi
 
     - name: End SonarCloud analysis
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: dotnet sonarscanner end /d:sonar.token="${SONAR_TOKEN}"
+      run: |
+        echo "🏁 Finalizing SonarCloud analysis for CESIZen"
+        dotnet sonarscanner end /d:sonar.token="$SONAR_TOKEN"
+
+    - name: Upload Test Results (Debug)
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: cesizen-test-results
+        path: ./TestResults
+        retention-days: 7
