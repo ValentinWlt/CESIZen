@@ -13,10 +13,22 @@ public class HomeController : Controller
         _logger = logger;
     }
 
-    public IActionResult Index()
-    {
-        return View();
-    }
+     public IActionResult Index()
+        {
+            try
+            {
+                var testNumber = 42;
+                var result = MathHelper.IsEven(testNumber); 
+                ViewBag.MathTestResult = $"Le nombre {testNumber} est {(result ? "pair" : "impair")}";
+            }
+            catch (Exception ex)
+            {
+                ViewBag.MathTestResult = $"❌ Erreur détectée: {ex.Message}";
+                _logger.LogError(ex, "Erreur lors du test de la méthode IsEven pour SonarCloud");
+            }
+
+            return View();
+        }
 
     public IActionResult Privacy()
     {
